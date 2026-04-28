@@ -3,7 +3,7 @@ from .base_dao import BaseDao
 
 from typing import List
 
-class Livro_dao(BaseDao[Livro]):
+class Livro_dao_mongo(BaseDao[Livro]):
     
     def insert(self, livro: Livro) -> int:
         pass

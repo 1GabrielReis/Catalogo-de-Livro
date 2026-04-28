@@ -1,5 +1,7 @@
+from typing import Optional
+
 class Livro:
-    def __init__(self, id: int,  titulo: str, autor: str, editora: str, sobre: str):
+    def __init__(self, id: Optional[str],  titulo: str, autor: str, editora: str, sobre: str):
         self.id = id
         self.titulo = titulo
         self.autor = autor
