@@ -43,7 +43,6 @@ def up(db):
         }
         
         db.create_collection("Livros", validator=schema)
-        print("✓ Coleção 'Livros' criada com sucesso")
         
     except CollectionInvalid as erro:
         raise DB_Exception(f'Coleção já existe: {str(erro)}')
@@ -54,8 +53,5 @@ def down(db):
     try:
         if "Livros" in db.list_collection_names():
             db.drop_collection("Livros")
-            print("✓ Coleção 'Livros' removida")
-        else:
-            print("⚠ Coleção 'Livros' não existe")
     except Exception as erro:
         raise DB_Exception(f"✗ Erro ao remover coleção: {str(erro)}")
