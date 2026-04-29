@@ -10,3 +10,4 @@ class Livro_schema(BaseModel):
     autor: str
     editora: str
     sobre: str
+    data_criacao: str
