@@ -10,5 +10,5 @@ class Livro_schema(BaseModel):
     titulo: str
     autor: str
     editora: str
-    sobre: Optional[date]
-    data_criacao: Optional[str]
+    sobre: Optional[str]
+    data_criacao: Optional[date]
