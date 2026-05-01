@@ -3,61 +3,57 @@ from dotenv import load_dotenv
 
 #biblioteca DB
 import pymongo as mongo
+from pymongo import errors as erro
 
 from .db_Exception import DB_Exception
+from .db_base import DB_base
 
-class DB_mongo:
-    conn = None
-    load_dotenv()
+class DB_mongo(DB_base):
+    def __init__(self):
+        super().__init__()
+        self.bd = None
+        self.client = None
 
-    @staticmethod
-    def _loadProperties(url):
-        if DB_mongo.conn is None:
-            try:
-                DB_mongo.conn = mongo.MongoClient(url)
-                return DB_mongo.conn
-            
-            except mongo.errors.ConnectionFailure as erro:
-                raise DB_Exception(f'Erro: Conectação ao MongoDB\ninfo:{erro}')
-            except Exception as erro:
-                raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+    def _loadProperties(self, url):
+        try:
+            self.client = mongo.MongoClient(url)
+        except erro.ConnectionFailure as erro:
+            raise DB_Exception(f'Erro: Conectação ao MongoDB\ninfo:{erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
 
-    @staticmethod
-    def getConn(**kwargs):
-        if DB_mongo.conn is None:
+    def getConn(self, **kwargs):
+        if self.bd is None:
             try:
                 mongo_DB = kwargs['DB']
                 mongo_url = kwargs['url']
                 
-                DB_mongo._loadProperties(mongo_url)
-                DB_mongo.db = DB_mongo.conn[mongo_DB]
-                
-                return DB_mongo.db
-            
-            except mongo.errors.ServerSelectionTimeoutError as erro:
+                self._loadProperties(mongo_url)
+                self.bd = self.client[mongo_DB]
+                return self.bd
+            except erro.ServerSelectionTimeoutError as erro:
                 raise DB_Exception(f'Erro: Conectação ao Data base\ninfo:{erro}')
             except Exception as erro:
                 raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
 
-    @staticmethod
-    def closeCursor(curso):
+    def closeCursor(self, curso):
         if curso is not None:
             try:
                 curso.close()
-            except Exception.errors.OperationFailure as erro:
+            except erro.OperationFailure as erro:
                 raise DB_Exception(f'Erro ao fechar o curso \ninfo:{erro}') 
             except Exception as erro:
                 raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')   
 
-    @staticmethod
-    def disconnect():
-        if DB_mongo.conn is not None:
+    def disconnect(self):
+        if self.bd is not None:
             try:
-
-                DB_mongo.conn.close()
-                DB_mongo.conn = None
-            except Exception.errors.ConnectionFailure as erro:
-                raise DB_Exception(f'Erro ao fecha conexão com banco \ninfo:{erro}') 
+                self.client.close()
+                self.client = None
+                self.bd = None
+            except erro.ConnectionFailure as erro:
+                raise DB_Exception(f'Erro ao fecha conexão \ninfo:{erro}') 
             except Exception as erro:
                 raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+    
 

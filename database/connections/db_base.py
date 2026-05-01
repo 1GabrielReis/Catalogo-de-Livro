@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, TypeVar, Generic
+from typing import Any
 
 class DB_base(ABC):
     @abstractmethod
-    def getConn(**kwargs):
+    def getConn(self,**kwargs) -> Any :
         pass
     @abstractmethod
-    def closeCursor(entity):
+    def closeCursor(self,entity: Any):
         pass
     @abstractmethod
-    def disconnect():
+    def disconnect(self):
         pass
