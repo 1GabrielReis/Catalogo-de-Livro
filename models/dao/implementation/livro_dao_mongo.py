@@ -6,7 +6,6 @@ from ...schemas.livro_schema import Livro_schema
 from .base_dao import BaseDao
 
 from ....database.connections.db_Exception import DB_Exception
-from ....database.connections.db_mongo import DB_mongo
 
 from pymongo import errors
 
@@ -19,29 +18,61 @@ class Livro_dao_mongo(BaseDao[Livro]):
         cursor = None
         try:
             livro_schema= Livro_schema(**livro.__dict__)
-
-            cursor= self.db['Livros']
-            livro.id = cursor.insert_one(livro_schema.model_dump()).inserted_id
-
+            cursor = self.db.getConn()['Livros']
+            id= cursor.insert_one(livro_schema.model_dump()).inserted_id
+            livro.id = str(id)
         except errors.DuplicateKeyError as erro:
             raise DB_Exception(f'Erro ao inserir novo livro \ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
         finally:
-            pass
+            self.db.closeCursor(cursor)
+            self.db.disconnect()
                 
 
     def update(self,livro: Livro) -> bool:
-        pass
+        cursor = None
+        try:
+            pass
+        except errors.OperationFailure:
+            raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        finally:
+            self.db.closeCursor(cursor)
 
     def deleteById(self, id) -> bool:
-        pass
+        cursor = None
+        try:
+            pass
+        except errors.OperationFailure:
+            raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        finally:
+            self.db.closeCursor(cursor)
 
     def findById(self, id) -> Livro:
-        pass
+        cursor = None
+        try:
+            pass
+        except errors.InvalidOperation:
+            raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        finally:
+            self.db.closeCursor(cursor)
 
     def findAll(self) -> List[Livro]:
-        pass
+        cursor = None
+        try:
+            pass
+        except errors.CursorNotFound:
+            raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        finally:
+            self.db.closeCursor(cursor)
 
 
     def _mapping_entity(self, row) -> Livro:
