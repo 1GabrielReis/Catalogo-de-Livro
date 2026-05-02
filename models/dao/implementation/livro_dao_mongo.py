@@ -33,10 +33,13 @@ class Livro_dao_mongo(BaseDao[Livro]):
     def update(self,livro: Livro) -> bool:
         cursor = None
         try:
-            id_livro = (livro_dict := livro.__dict__).pop("id") 
+            id_livro = (livro_dict := livro.__dict__).pop("id")
             id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
+            
+            livro_schema = Livro_schema(livro_dict)
+
             cursor = self.db.getConn()['Livros']
-            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_dict})
+            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_schema.model_dump()})
 
             if resultado.modified_count == 0:
                 raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
