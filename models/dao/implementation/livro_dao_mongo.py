@@ -71,8 +71,12 @@ class Livro_dao_mongo(BaseDao[Livro]):
     def findAll(self) -> List[Livro]:
         cursor = None
         try:
-            pass
-        except errors.CursorNotFound:
+            cursor = self.db.getConn()['Livros']
+            livros_dict = list(cursor.find())
+
+            livros = [self._mapping_entity(livro) for livro in livros_dict]
+            return livros
+        except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
