@@ -1,5 +1,5 @@
 from typing import List
-from datetime import date
+from bson.objectid import ObjectId
 
 from ...entities.livro import Livro
 from ...schemas.livro_schema import Livro_schema
@@ -55,8 +55,13 @@ class Livro_dao_mongo(BaseDao[Livro]):
     def findById(self, id) -> Livro:
         cursor = None
         try:
-            pass
-        except errors.InvalidOperation:
+            livro_id = ObjectId(id)  if isinstance(id, str) else id
+        
+            cursor = self.db.getConn()['Livros']
+            livro_dict = cursor.find_one({"_id":livro_id})
+            return self._mapping_entity(livro_dict)
+
+        except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
