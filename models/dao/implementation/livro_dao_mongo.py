@@ -84,15 +84,13 @@ class Livro_dao_mongo(BaseDao[Livro]):
             self.db.closeCursor(cursor)
 
 
-    def _mapping_entity(self, row) -> Livro:
-        """Mapeia uma linha do banco para a entidade Livro"""
-        return Livro(
-            id=row[0],
-            titulo=row[1],
-            autor=row[2],
-            isbn=row[3],
-            descricao=row[4],
-            descricao_ia=row[5],
-            data_criacao=row[6],
-            data_atualizacao=row[7]
-        )
+    def _mapping_entity(self, row: dict) -> Livro:
+            """Mapeia uma linha do banco para a entidade Livro"""
+            return Livro(
+                id= str(row['_id']),
+                titulo=row["titulo"],
+                autor=row["autor"],
+                editora=row["editora"],
+                sobre=row["sobre"],
+                data_criacao=row["data_criacao"]
+            )
