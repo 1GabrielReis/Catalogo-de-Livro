@@ -33,13 +33,22 @@ class Livro_dao_mongo(BaseDao[Livro]):
     def update(self,livro: Livro) -> bool:
         cursor = None
         try:
-            pass
-        except errors.OperationFailure:
-            raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
+            id_livro = (livro_dict := livro.__dict__).pop("id") 
+            id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
+            cursor = self.db.getConn()['Livros']
+            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_dict})
+
+            if resultado.modified_count == 0:
+                raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
+            return True
+         
+        except errors.OperationFailure as erro:
+            raise DB_Exception(f'Erro ao fazer update \ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
         finally:
             self.db.closeCursor(cursor)
+            
 
     def deleteById(self, id) -> bool:
         cursor = None
