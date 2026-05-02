@@ -3,7 +3,7 @@ from typing import List, Optional, TypeVar, Generic
 
 T = TypeVar('T')
 
-class BaseDao(ABC,Generic[T]):
+class Interface_Dao(ABC,Generic[T]):
     
     @abstractmethod
     def insert(self,entity: T) -> int:
