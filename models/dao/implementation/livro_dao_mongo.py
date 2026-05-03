@@ -2,14 +2,13 @@ from typing import List
 from bson.objectid import ObjectId
 
 from ...entities.livro import Livro
-from ...schemas.livro_schema import Livro_schema
-from .base_dao import BaseDao
+from .interface_Dao import Interface_Dao
 
 from ....database.connections.db_Exception import DB_Exception
 
 from pymongo import errors
 
-class Livro_dao_mongo(BaseDao[Livro]):
+class Livro_dao_mongo(Interface_Dao[Livro]):
     def __init__(self,db):
         super().__init__()
         self.db = db
@@ -17,9 +16,8 @@ class Livro_dao_mongo(BaseDao[Livro]):
     def insert(self, livro: Livro) -> int:
         cursor = None
         try:
-            livro_schema= Livro_schema(**livro.__dict__)
             cursor = self.db.getConn()['Livros']
-            id= cursor.insert_one(livro_schema.model_dump()).inserted_id
+            id= cursor.insert_one(**livro.__dict__).inserted_id
             livro.id = str(id)
         except errors.DuplicateKeyError as erro:
             raise DB_Exception(f'Erro ao inserir novo livro \ninfo: {erro}')
@@ -36,10 +34,8 @@ class Livro_dao_mongo(BaseDao[Livro]):
             id_livro = (livro_dict := livro.__dict__).pop("id")
             id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
             
-            livro_schema = Livro_schema(livro_dict)
-
             cursor = self.db.getConn()['Livros']
-            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_schema.model_dump()})
+            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_dict.model_dump()})
 
             if resultado.modified_count == 0:
                 raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
