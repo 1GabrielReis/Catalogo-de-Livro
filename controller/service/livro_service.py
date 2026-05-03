@@ -42,4 +42,7 @@ class Livro_service:
 
 
     def findAll(self) -> List[Livro]:
-        pass
+        try:
+            return self.repository.findAll()
+        except Exception as erro:
+            raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
