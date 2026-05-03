@@ -35,7 +35,10 @@ class Livro_service:
 
 
     def findById(self, id: int) -> Livro:
-        pass
+        try:
+            return self.repository.findById(id)
+        except Exception as erro:
+            raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
 
     def findAll(self) -> List[Livro]:
