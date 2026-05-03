@@ -20,7 +20,11 @@ class Livro_service:
 
 
     def update(self,livro_schema: Livro_schema) -> bool:
-        pass
+        try:
+            livro = Livro(livro_schema.model_dump())
+            return self.repository.insert(livro)
+        except Exception as erro:
+            raise Service_Exception(f'erro insert service: \ninfo: {erro}')
 
 
     def deleteById(self, id: int) -> bool:
