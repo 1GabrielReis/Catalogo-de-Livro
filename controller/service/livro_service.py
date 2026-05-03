@@ -28,7 +28,10 @@ class Livro_service:
 
 
     def deleteById(self, id: int) -> bool:
-        pass
+        try:
+            return self.repository.deleteById(id)
+        except Exception as erro:
+            raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
 
     def findById(self, id: int) -> Livro:
