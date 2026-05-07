@@ -1,7 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class Bibliotecas_dto_response(BaseModel):
     id: int
-    titulo: str
+    titulo: str = Field(alias="titutlo")
     autor: str
     editora: str
