@@ -1,7 +1,7 @@
 from typing import List, TypeVar, Generic
 
 from ..models.entities.livro import Livro
-from ..models.schemas.livro_schema import Livro_schema
+from ..schemas import Livro_schema
 from ..models.dao.implementation.interface_Dao import Interface_Dao
 from .service_exception import Service_Exception
 
