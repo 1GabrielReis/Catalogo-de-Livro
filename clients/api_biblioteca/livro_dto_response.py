@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 
 class Livro_dto_response(BaseModel):
-    titulo: str = Field(alias="titutlo")
+    id = int 
+    titulo: str = Field(alias="tituto")
     autor: str
     editora: str
