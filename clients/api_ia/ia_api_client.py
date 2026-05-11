@@ -6,13 +6,14 @@ from ..clients_interface import IIa_interface
 from .ia_settings import IA_settings
 from .ia_dto_response import IA_dto_response
 from .ia_exception import IA_exception
+from ...models.entities.livro import Livro
 
 class IA_api_client(IIa_interface):
     def __init__(self, settings: IA_settings):
         self.settings = settings
     
     
-    async def about_book(self,livro : Livro_dto_response) -> IA_dto_response:
+    async def about_book(self,livro : Livro_dto_response | Livro) -> IA_dto_response:
         try:
             client = self.settings.ia_client()
 
