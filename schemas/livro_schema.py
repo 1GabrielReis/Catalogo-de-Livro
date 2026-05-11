@@ -3,8 +3,6 @@ from datetime import date
 
 from typing import Optional
 
-from ..entities.livro import Livro
-
 class Livro_schema(BaseModel):
     id: Optional[str]
     titulo: str
