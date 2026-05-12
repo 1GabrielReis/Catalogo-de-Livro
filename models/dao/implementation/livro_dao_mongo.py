@@ -2,18 +2,18 @@ from typing import List
 from bson.objectid import ObjectId
 
 from ...entities.livro import Livro
-from .interface_Dao import Interface_Dao
+from ..livro_interface import ILivro_interface
 
 from ....database.connections.db_Exception import DB_Exception
 
 from pymongo import errors
 
-class Livro_dao_mongo(Interface_Dao[Livro]):
+class Livro_dao_mongo(ILivro_interface):
     def __init__(self,db):
         super().__init__()
         self.db = db
     
-    def insert(self, livro: Livro) -> int:
+    def insert(self, livro: Livro):
         cursor = None
         try:
             cursor = self.db.getConn()['Livros']
@@ -77,6 +77,22 @@ class Livro_dao_mongo(Interface_Dao[Livro]):
 
         except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        finally:
+            self.db.closeCursor(cursor)
+    
+    def findByTitle(self,title: str) -> List[Livro]:
+        cursor = None
+        try:
+        
+            cursor = self.db.getConn()['Livros']
+            livros_dict = list(cursor.find({"titulo":title}))
+            livros = [self._mapping_entity(livro) for livro in livros_dict]
+            return livros
+
+        except errors.OperationFailure as erro:
+            raise DB_Exception(f'Erro ao encontrar livros\ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
         finally:
