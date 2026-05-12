@@ -3,11 +3,16 @@ from typing import List, TypeVar, Generic
 from ..models.entities.livro import Livro
 from ..schemas import Livro_schema
 from ..models.dao.implementation.interface_Dao import Interface_Dao
+from ..clients.clients_interface import IBiblioteca_interface, IIa_interface
 from .service_exception import Service_Exception
 
 class Livro_service:
-    def __init__(self, repository:Interface_Dao[Livro]):
+    def __init__(self, repository:Interface_Dao[Livro],
+                 library_client: IBiblioteca_interface,
+                 ia_client: IIa_interface):
         self.repository = repository
+        self.library_client = library_client
+        self.ia_client = ia_client
     
 
     def insert(self,livro_schema: Livro_schema) -> int:
