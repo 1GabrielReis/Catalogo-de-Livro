@@ -42,9 +42,16 @@ class Livro_service:
             raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
 
-    def findById(self, id: int) -> Livro:
+    async def findById(self, id: str) -> Livro:
         try:
-            return self.repository.findById(id)
+            livro = await self.repository.findById(id)
+            if not livro and id.strip().isdigit():
+                livro = await self.library_client.findById(int(id))
+                if livro:
+                    livro_dto = await self.ia_client.about_book(livro)
+                    livro = Livro(**livro_dto.model_dump())
+                    await self.repository.insert(livro)
+            return livro
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
