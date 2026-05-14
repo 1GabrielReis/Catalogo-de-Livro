@@ -126,14 +126,14 @@ class Livro_dao_mongo(ILivro_interface):
                 data_criacao=row["data_criacao"]
             )
     
-    def _check_duplicity(self, livro: Livro) -> bool:
+    def _check_duplicity(self, livro: Livro) -> str:
         cursor = None
         try:
-            id, titulo = livro.id, livro.titulo
+            titulo, autor = livro.titulo, livro.autor
         
             cursor = self.db.getConn()['Livros']
-            livro_check = cursor.find_one({"$and":[{"_id":id},{'titulo':titulo}]})
-            return livro_check is not None
+            livro_check = cursor.find_one({"$and":[{"titulo":titulo},{'autor':autor}]})
+            return str(livro_check.get("_id")) if livro_check else ""
         
         except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao verificar \ninfo: {erro}')
