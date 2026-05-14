@@ -16,8 +16,9 @@ class Livro_dao_mongo(ILivro_interface):
     def insert(self, livro: Livro):
         cursor = None
         try:
-            cursor = self.db.getConn()['Livros']
-            id= cursor.insert_one(**livro.__dict__).inserted_id
+            if not (id := self._check_duplicity(livro)):
+                cursor = self.db.getConn()['Livros']
+                id= cursor.insert_one(**livro.__dict__).inserted_id
             livro.id = str(id)
         except errors.DuplicateKeyError as erro:
             raise DB_Exception(f'Erro ao inserir novo livro \ninfo: {erro}')
@@ -25,7 +26,6 @@ class Livro_dao_mongo(ILivro_interface):
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
         finally:
             self.db.closeCursor(cursor)
-            self.db.disconnect()
                 
 
     def update(self,livro: Livro) -> bool:
