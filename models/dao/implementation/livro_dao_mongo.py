@@ -34,9 +34,12 @@ class Livro_dao_mongo(ILivro_interface):
             id_livro = (livro_dict := livro.__dict__).pop("id")
             id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
             
+            if (duplicado := self._check_duplicity(livro)) and duplicado != str(id_livro):
+                return False
+            
             cursor = self.db.getConn()['Livros']
-            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_dict.model_dump()})
-
+            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_dict})
+                
             if resultado.modified_count == 0:
                 raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
             return True
