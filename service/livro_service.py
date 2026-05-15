@@ -12,7 +12,7 @@ class Livro_service:
 
     def insert(self,livro_schema: Livro_schema) -> int:
         try:
-            livro = Livro(**livro_schema.model_dump())
+            livro = Livro(**self._format_book(livro_schema))
             return self.repository.insert(livro)
         except Exception as erro:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
