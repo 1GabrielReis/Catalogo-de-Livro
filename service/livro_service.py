@@ -47,8 +47,8 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
         
-    def _format_book(self, livro:Livro_schema):
-        return Livro(id= livro.id.strip() if livro.id else None,
+    def _format_book(self, livro:Livro_schema) -> dict:
+        return dict(id= livro.id.strip() if livro.id else None,
                      titulo= " ".join([palavra.title() for palavra in livro.titulo.split()]),
                      autor= " ".join([nome.title() for nome in livro.autor.split()]),
                      editora= " ".join([empresa.lower() for empresa in livro.editora.split()]),
