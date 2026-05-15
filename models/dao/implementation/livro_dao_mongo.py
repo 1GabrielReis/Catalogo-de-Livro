@@ -145,10 +145,3 @@ class Livro_dao_mongo(ILivro_interface):
         finally:
             self.db.closeCursor(cursor)
     
-    def _format_book(self, livro:Livro):
-        return Livro(id= livro.id.strip() if livro.id else None,
-                     titulo= " ".join([palavra.title() for palavra in livro.titulo.split()]),
-                     autor= " ".join([nome.title() for nome in livro.autor.split()]),
-                     editora= " ".join([empresa.lower() for empresa in livro.editora.split()]),
-                     sobre= livro.sobre.strip() if livro.sobre else None,
-                     data_criacao= livro.data_criacao)

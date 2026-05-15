@@ -2,11 +2,11 @@ from typing import List, TypeVar, Generic
 
 from ..models.entities.livro import Livro
 from ..schemas import Livro_schema
-from ..models.dao.implementation.interface_Dao import Interface_Dao
+from ..models.dao.livro_interface import ILivro_interface
 from .service_exception import Service_Exception
 
 class Livro_service:
-    def __init__(self, repository:Interface_Dao[Livro]):
+    def __init__(self, repository:ILivro_interface[Livro]):
         self.repository = repository
     
 
@@ -46,3 +46,11 @@ class Livro_service:
             return self.repository.findAll()
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
+        
+    def _format_book(self, livro:Livro_schema):
+        return Livro(id= livro.id.strip() if livro.id else None,
+                     titulo= " ".join([palavra.title() for palavra in livro.titulo.split()]),
+                     autor= " ".join([nome.title() for nome in livro.autor.split()]),
+                     editora= " ".join([empresa.lower() for empresa in livro.editora.split()]),
+                     sobre= livro.sobre.strip() if livro.sobre else None,
+                     data_criacao= livro.data_criacao)
