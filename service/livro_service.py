@@ -37,9 +37,9 @@ class Livro_service:
             raise Service_Exception(f'erro update service: \ninfo: {erro}')
 
 
-    def deleteById(self, id: int) -> bool:
+    async def deleteById(self, id: int) -> bool:
         try:
-            return self.repository.deleteById(id)
+            return await self.repository.deleteById(id)
         except Exception as erro:
             raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
