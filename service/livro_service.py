@@ -36,8 +36,7 @@ class Livro_service:
 
     def findById(self, id: int) -> Livro:
         try:
-            livro = self.repository.findById(id)
-            return self._format_book(livro)
+            return self.repository.findById(id)
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
