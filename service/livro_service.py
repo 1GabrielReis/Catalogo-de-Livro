@@ -28,10 +28,11 @@ class Livro_service:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
         
 
-    def update(self,livro_schema: Livro_schema) -> bool:
+    async def update(self,livro_schema: Livro_schema) -> bool:
         try:
             livro = Livro(self._format_book(livro_schema.model_dump()))
-            return self.repository.update(livro)
+            livro = await self._check_library_about(livro)
+            return await self.repository.update(livro)
         except Exception as erro:
             raise Service_Exception(f'erro update service: \ninfo: {erro}')
 
