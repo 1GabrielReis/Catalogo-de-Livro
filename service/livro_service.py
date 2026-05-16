@@ -40,6 +40,12 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
+    def findByTitle(self, title: str) -> Livro:
+        try:
+            title = "".join([palavra.title() for palavra in title.split()])
+            return self.repository.findById(id)
+        except Exception as erro:
+            raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
     def findAll(self) -> List[Livro]:
         try:
