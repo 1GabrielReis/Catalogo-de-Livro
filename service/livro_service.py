@@ -21,7 +21,7 @@ class Livro_service:
 
     def update(self,livro_schema: Livro_schema) -> bool:
         try:
-            livro = Livro(**livro_schema.model_dump())
+            livro = Livro(self._format_book(livro_schema.model_dump()))
             return self.repository.update(livro)
         except Exception as erro:
             raise Service_Exception(f'erro update service: \ninfo: {erro}')
