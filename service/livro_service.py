@@ -16,7 +16,7 @@ class Livro_service:
         self.ia_client = ia_client
     
 
-    async def insert(self,livro_schema: Livro_schema) -> int:
+    async def insert(self,livro_schema: Livro_schema) -> str:
         try:
             livro = Livro(**self._format_book(livro_schema))
             livro = await self._check_library_about(livro)
