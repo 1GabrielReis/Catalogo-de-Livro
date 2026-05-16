@@ -57,9 +57,17 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
-    def findByTitle(self, title: str) -> Livro:
+    async def findByTitle(self, title: str) -> Livro:
         try:
-            title = "".join([palavra.title() for palavra in title.split()])
+            title = " ".join([palavra.title() for palavra in title.split()])
+            livro = await self.repository.findByTitle(title)
+            if livro is not None and len(title) > 0:
+                livro = await self.library_client.findByTitle(title)
+                if livro:
+                    livro_dto = await self.ia_client.about_book(livro)
+                    livro = Livro(**self._format_book(livro_dto))
+                    await self.repository.insert(livro)
+                return livro
             return self.repository.findById(id)
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
