@@ -30,7 +30,7 @@ class Livro_service:
 
     async def update(self,livro_schema: Livro_schema) -> bool:
         try:
-            livro = Livro(self._format_book(livro_schema.model_dump()))
+            livro = Livro(**self._format_book(livro_schema.model_dump()))
             livro = await self._check_library_about(livro)
             return await self.repository.update(livro)
         except Exception as erro:
@@ -61,12 +61,11 @@ class Livro_service:
         try:
             title = " ".join([palavra.title() for palavra in title.split()])
             livros = await self.repository.findByTitle(title)
-            if livros is not None:
+            if not livros:
                 livros = await self.library_client.findByTitle(title)
                 if livros:
                     livros = [Livro(**self._format_book(livro)) for livro in livros]
-                return livros
-            return self.repository.findById(id)
+            return livros
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
