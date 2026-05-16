@@ -51,7 +51,7 @@ class Livro_service:
                 livro = await self.library_client.findById(int(id))
                 if livro:
                     livro_dto = await self.ia_client.about_book(livro)
-                    livro = Livro(**livro_dto.model_dump())
+                    livro = Livro(**self._format_book(**livro_dto))
                     await self.repository.insert(livro)
             return livro
         except Exception as erro:
@@ -76,7 +76,7 @@ class Livro_service:
             livro.sobre = response.sobre
         return livro
         
-    def _format_book(self, livro:Livro_schema) -> dict:
+    def _format_book(self, livro:Livro_schema|Livro_dto_response) -> dict:
         return dict(id= livro.id.strip() if livro.id else None,
                      titulo= " ".join([palavra.title() for palavra in livro.titulo.split()]),
                      autor= " ".join([nome.title() for nome in livro.autor.split()]),
