@@ -2,13 +2,13 @@ from typing import List, TypeVar, Generic
 
 from ..models.entities.livro import Livro
 from ..schemas import Livro_schema
-from ..models.dao.implementation.interface_Dao import Interface_Dao
+from ..models.dao.livro_interface import ILivro_interface
 from ..clients.clients_interface import IBiblioteca_interface, IIa_interface
 from ..clients.api_biblioteca.livro_dto_response import Livro_dto_response
 from .service_exception import Service_Exception
 
 class Livro_service:
-    def __init__(self, repository:Interface_Dao[Livro],
+    def __init__(self, repository:ILivro_interface,
                  library_client: IBiblioteca_interface,
                  ia_client: IIa_interface):
         self.repository = repository
@@ -18,18 +18,19 @@ class Livro_service:
 
     async def insert(self,livro_schema: Livro_schema) -> int:
         try:
-            livro = Livro(**livro_schema.model_dump())
+            livro = Livro(**self._format_book(livro_schema))
             livro = await self._check_library_about(livro)
 
             await self.repository.insert(livro)
             return   livro.id
+            
         except Exception as erro:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
         
 
     def update(self,livro_schema: Livro_schema) -> bool:
         try:
-            livro = Livro(**livro_schema.model_dump())
+            livro = Livro(self._format_book(livro_schema.model_dump()))
             return self.repository.update(livro)
         except Exception as erro:
             raise Service_Exception(f'erro update service: \ninfo: {erro}')
@@ -55,6 +56,12 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
+    def findByTitle(self, title: str) -> Livro:
+        try:
+            title = "".join([palavra.title() for palavra in title.split()])
+            return self.repository.findById(id)
+        except Exception as erro:
+            raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
     def findAll(self) -> List[Livro]:
         try:
@@ -67,3 +74,11 @@ class Livro_service:
             response= await self.ia_client.about_book(livro)
             livro.sobre = response.sobre
         return livro
+        
+    def _format_book(self, livro:Livro_schema) -> dict:
+        return dict(id= livro.id.strip() if livro.id else None,
+                     titulo= " ".join([palavra.title() for palavra in livro.titulo.split()]),
+                     autor= " ".join([nome.title() for nome in livro.autor.split()]),
+                     editora= " ".join([empresa.lower() for empresa in livro.editora.split()]),
+                     sobre= livro.sobre.strip() if livro.sobre else None,
+                     data_criacao= livro.data_criacao)

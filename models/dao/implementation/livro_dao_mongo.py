@@ -2,22 +2,23 @@ from typing import List
 from bson.objectid import ObjectId
 
 from ...entities.livro import Livro
-from .interface_Dao import Interface_Dao
+from ..livro_interface import ILivro_interface
 
 from ....database.connections.db_Exception import DB_Exception
 
 from pymongo import errors
 
-class Livro_dao_mongo(Interface_Dao[Livro]):
+class Livro_dao_mongo(ILivro_interface):
     def __init__(self,db):
         super().__init__()
         self.db = db
     
-    def insert(self, livro: Livro) -> int:
+    def insert(self, livro: Livro):
         cursor = None
         try:
-            cursor = self.db.getConn()['Livros']
-            id= cursor.insert_one(**livro.__dict__).inserted_id
+            if not (id := self._check_duplicity(livro)):
+                cursor = self.db.getConn()['Livros']
+                id= cursor.insert_one(**livro.__dict__).inserted_id
             livro.id = str(id)
         except errors.DuplicateKeyError as erro:
             raise DB_Exception(f'Erro ao inserir novo livro \ninfo: {erro}')
@@ -25,7 +26,6 @@ class Livro_dao_mongo(Interface_Dao[Livro]):
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
         finally:
             self.db.closeCursor(cursor)
-            self.db.disconnect()
                 
 
     def update(self,livro: Livro) -> bool:
@@ -34,9 +34,12 @@ class Livro_dao_mongo(Interface_Dao[Livro]):
             id_livro = (livro_dict := livro.__dict__).pop("id")
             id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
             
+            if (duplicado := self._check_duplicity(livro)) and duplicado != str(id_livro):
+                return False
+            
             cursor = self.db.getConn()['Livros']
-            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_dict.model_dump()})
-
+            resultado = cursor.update_one({'_id': id_livro},{"$set": livro_dict})
+                
             if resultado.modified_count == 0:
                 raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
             return True
@@ -81,6 +84,22 @@ class Livro_dao_mongo(Interface_Dao[Livro]):
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
         finally:
             self.db.closeCursor(cursor)
+    
+    def findByTitle(self,title: str) -> List[Livro]:
+        cursor = None
+        try:
+        
+            cursor = self.db.getConn()['Livros']
+            livros_dict = list(cursor.find({"titulo":title}))
+            livros = [self._mapping_entity(livro) for livro in livros_dict]
+            return livros
+
+        except errors.OperationFailure as erro:
+            raise DB_Exception(f'Erro ao encontrar livros\ninfo: {erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        finally:
+            self.db.closeCursor(cursor)
 
 
     def findAll(self) -> List[Livro]:
@@ -109,3 +128,20 @@ class Livro_dao_mongo(Interface_Dao[Livro]):
                 sobre=row["sobre"],
                 data_criacao=row["data_criacao"]
             )
+    
+    def _check_duplicity(self, livro: Livro) -> str:
+        cursor = None
+        try:
+            titulo, autor = livro.titulo, livro.autor
+        
+            cursor = self.db.getConn()['Livros']
+            livro_check = cursor.find_one({"$and":[{"titulo":titulo},{'autor':autor}]})
+            return str(livro_check.get("_id")) if livro_check else ""
+        
+        except errors.OperationFailure as erro:
+            raise DB_Exception(f'Erro ao verificar \ninfo: {erro}')
+        except Exception as erro:
+            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        finally:
+            self.db.closeCursor(cursor)
+    

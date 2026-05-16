@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, TypeVar, Generic
+from typing import List, TypeVar, Generic
 
 T = TypeVar('T')
 
-class Interface_Dao(ABC,Generic[T]):
+class IDao_interface(ABC,Generic[T]):
     
     @abstractmethod
-    def insert(self,entity: T) -> int:
+    def insert(self,entity: T):
         pass
 
     @abstractmethod
@@ -14,11 +14,11 @@ class Interface_Dao(ABC,Generic[T]):
         pass
 
     @abstractmethod
-    def deleteById(self, id) -> bool:
+    def deleteById(self, id: str) -> bool:
         pass
 
     @abstractmethod
-    def findById(self, id) -> T:
+    def findById(self, id: str) -> T:
         pass
 
     @abstractmethod
