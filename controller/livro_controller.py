@@ -1,6 +1,7 @@
 from ..view.view_entities.livro_view import Livro_view
 from ..schemas.livro_schema import Livro_schema
 from ..service.livro_service import Livro_service
+from .controller_Exception import Controller_Exception
 
 class Livro_controller():
     def __init__(self, service:Livro_service, view:Livro_view):
