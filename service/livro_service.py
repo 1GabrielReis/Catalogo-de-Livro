@@ -16,13 +16,13 @@ class Livro_service:
         self.ia_client = ia_client
     
 
-    async def insert(self,livro_schema: Livro_schema) -> str:
+    async def insert(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = Livro(**self._format_book(livro_schema))
             livro = await self._check_library_about(livro)
 
             await self.repository.insert(livro)
-            return   livro.id
+            return  dict(id=livro.id)
             
         except Exception as erro:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
