@@ -16,30 +16,32 @@ class Livro_service:
         self.ia_client = ia_client
     
 
-    async def insert(self,livro_schema: Livro_schema) -> str:
+    async def insert(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = Livro(**self._format_book(livro_schema))
             livro = await self._check_library_about(livro)
 
             await self.repository.insert(livro)
-            return   livro.id
+            return  dict(id=livro.id)
             
         except Exception as erro:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
         
 
-    async def update(self,livro_schema: Livro_schema) -> bool:
+    async def update(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = Livro(**self._format_book(livro_schema.model_dump()))
             livro = await self._check_library_about(livro)
-            return await self.repository.update(livro)
+            check =  await self.repository.update(livro)
+            return dict(check=check)
         except Exception as erro:
             raise Service_Exception(f'erro update service: \ninfo: {erro}')
 
 
-    async def deleteById(self, id: int) -> bool:
+    async def deleteById(self, id: str) -> dict:
         try:
-            return await self.repository.deleteById(id)
+            check =  await self.repository.deleteById(id)
+            return dict(check=check)
         except Exception as erro:
             raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
