@@ -15,10 +15,10 @@ class Settings:
                     biblioteca_url:str,
                     blioteca_user:str
                 ):
-        self.data_base_url =  os.getenv(data_base_url)
-        self.data_base = os.getenv(data_base)
-        self.ia_key= os.getenv(ia_key)
-        self.model_id= os.getenv(model_id)
-        self.biblioteca_url= os.getenv(biblioteca_url) 
-        self.blioteca_user= os.getenv(blioteca_user)
+        self.data_base_url =  os.getenv(f"{data_base_url}")
+        self.data_base = os.getenv(f"{data_base}")
+        self.ia_key= os.getenv(f"{ia_key}")
+        self.model_id= os.getenv(f"{model_id}")
+        self.biblioteca_url= os.getenv(f"{biblioteca_url}") 
+        self.blioteca_user= os.getenv(f"{blioteca_user}")
 
