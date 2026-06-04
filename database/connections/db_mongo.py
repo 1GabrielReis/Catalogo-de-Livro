@@ -9,10 +9,10 @@ from .db_Exception import DB_Exception
 from .db_base import DB_base
 
 class DB_mongo(DB_base):
-    def __init__(self):
+    def __init__(self, bd=None, client=None):
         super().__init__()
-        self.bd = None
-        self.client = None
+        self.bd = bd
+        self.client = client
 
     def _loadProperties(self, url):
         try:
