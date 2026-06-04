@@ -8,7 +8,7 @@ from .livro_dto_response import Livro_dto_response
 from .biblioteca_exception import Biblioteca_exception
 
 
-class biblioteca_api_client(IBiblioteca_interface):
+class Biblioteca_api_client(IBiblioteca_interface):
     def __init__(self, settings: Biblioteca_settings):
         self.settings = settings
 
