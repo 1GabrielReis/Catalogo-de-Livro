@@ -1,12 +1,14 @@
 from pymongo.errors import OperationFailure
  
+from ..connections.db_mongo import DB_mongo
 from ..connections.db_Exception import DB_Exception
 
-def up(db):
+def up(db: DB_mongo):
+    colecao = None
     try:
-        colecao = db['Livros']
+        colecao = db.getConn()['Livros']
 
-        if 'Livros' not in db.list_collection_names():
+        if 'Livros' not in db.bd.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute a migration anterior primeiro.")
         
         #"_id" mongo criação automaticamente 
@@ -20,12 +22,15 @@ def up(db):
         raise DB_Exception(f"Erro de operação ao criar índices: {str(erro)}")
     except Exception as erro:
         raise DB_Exception(f"Erro inesperado ao criar índices: {str(erro)}")
+    finally:
+        db.closeCursor(colecao)
     
-def down(db):
+def down(db: DB_mongo):
+    colecao = None
     try:
         colecao = db["Livros"]
         
-        if "Livros" not in db.list_collection_names():
+        if "Livros" not in db.bd.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute a migration anterior primeiro.")
         
         colecao.drop_index("titulo_1") # o mongo cria o _1 para refereir ao ordem.
@@ -37,6 +42,8 @@ def down(db):
         raise DB_Exception(f"⚠ Índice não existe ou erro ao remover: {str(erro)}")
     except Exception as erro:
         raise DB_Exception(f"✗ Erro ao remover índices: {str(erro)}")
+    finally:
+        db.closeCursor(colecao)
 
         
         
