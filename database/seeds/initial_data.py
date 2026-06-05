@@ -2,13 +2,15 @@ from datetime import date
 from pymongo.errors import DuplicateKeyError
 
 from ..connections.db_Exception import DB_Exception
+from ..connections.db_mongo import DB_mongo
 
 
-def up(db):
+def up(db: DB_mongo):
+    colecao = None 
     try:
-        colecao = db["Livros"]
+        colecao = db.getConn()["Livros"]
         
-        if "Livros" not in db.list_collection_names():
+        if "Livros" not in db.bd.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute as migrations primeiro.")
         
         livros = [
@@ -41,22 +43,21 @@ def up(db):
         # Insere cada livro na coleção
         resultado = colecao.insert_many(livros)
         
-        if resultado.inserted_ids:
-            quantidade = len(resultado.inserted_ids)
-        else:
-            quantidade = 0
+        if not resultado.inserted_ids:
+            raise DB_Exception(f"Erro ao inserir dados iniciais: {str(erro)}")
             
     except DuplicateKeyError as erro:
         raise DB_Exception(f"Erro: ISBN duplicado ao inserir dados. {str(erro)}")
-    except Exception as erro:
-        raise DB_Exception(f"Erro ao inserir dados iniciais: {str(erro)}")
+    finally:
+        db.closeCursor(colecao)
 
 
-def down(db):
+def down(db: DB_mongo):
+    colecao = None 
     try:
-        colecao = db["Livros"]
+        colecao = db.getConn()["Livros"]
         
-        if "Livros" not in db.list_collection_names():
+        if "Livros" not in db.bd.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe.")
         
         titulos_para_remover = [
@@ -70,3 +71,5 @@ def down(db):
             
     except Exception as erro:
         raise DB_Exception(f"Erro ao remover dados: {str(erro)}")
+    finally:
+        db.closeCursor(colecao)
