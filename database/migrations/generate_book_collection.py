@@ -6,6 +6,7 @@ from ..connections.db_mongo import DB_mongo
 
 def up(db: DB_mongo):
     try:
+        db.getConn()
         if "Livros" not in db.bd.list_collection_names():
             schema = {
                 '$jsonSchema': {
@@ -41,7 +42,6 @@ def up(db: DB_mongo):
                     }
                 }
             }
-
             db.create_collection("Livros", validator=schema)
         
     except CollectionInvalid as erro:
@@ -49,9 +49,10 @@ def up(db: DB_mongo):
     except Exception as erro:
         raise DB_Exception(f"✗ Erro ao criar coleção: {str(erro)}")
 
-def down(db):
+def down(db: DB_mongo):
     try:
-        if "Livros" in db.list_collection_names():
+        db.getConn()
+        if "Livros" in db.bd.list_collection_names():
             db.drop_collection("Livros")
     except Exception as erro:
         raise DB_Exception(f"✗ Erro ao remover coleção: {str(erro)}")
