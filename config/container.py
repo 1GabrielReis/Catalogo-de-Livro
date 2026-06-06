@@ -4,7 +4,7 @@ from ..clients.api_biblioteca.biblioteca_api_client import Biblioteca_api_client
 from ..clients.api_ia.ia_api_client import IA_api_client
 class Container:
     def __init__(self):
-        self.container = self.container_set()
+        self.container = self._container_set()
         
     def _container_set(self):
         return {
