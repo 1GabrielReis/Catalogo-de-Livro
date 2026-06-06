@@ -10,9 +10,10 @@ class Container:
         self.livro_bd = livro_bd
         self.biblioteca_api = biblioteca_api
         self.ia_api = ia_api
+        self.container = self._container_dict()
 
         
-    def container(self) -> dict:
+    def _container_dict(self) -> dict:
         return {
             "ILivro_interface":self.livro_bd,
             "IBiblioteca_interface": self.biblioteca_api,
