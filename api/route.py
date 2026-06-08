@@ -61,3 +61,5 @@ def get_livro_router(controller: Livro_controller):
             return livros
         except Route_Exception as erro:
                 raise HTTPException(status_code=500, detail=f"Erro findAll routes \ninfo {erro}")
+    
+    return routes
