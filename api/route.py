@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 
 from .route_Exception import Route_Exception
-from ..controller.livro_controller import Livro_controller
-from ..schemas.livro_schema import Livro_schema 
+from controller.livro_controller import Livro_controller
+from schemas.livro_schema import Livro_schema 
 
 
 def get_livro_router(controller: Livro_controller):

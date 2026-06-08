@@ -1,7 +1,7 @@
 from .settings import Settings
-from ..models.dao.implementation.livro_dao_mongo import Livro_dao_mongo
-from ..clients.api_biblioteca.biblioteca_api_client import Biblioteca_api_client
-from ..clients.api_ia.ia_api_client import IA_api_client
+from models.dao.implementation.livro_dao_mongo import Livro_dao_mongo
+from clients.api_biblioteca.biblioteca_api_client import Biblioteca_api_client
+from clients.api_ia.ia_api_client import IA_api_client
 class Container:
     def __init__(self,
                  livro_bd: Livro_dao_mongo,
