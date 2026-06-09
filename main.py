@@ -32,8 +32,8 @@ settings_env = settings.Settings(data_base_url= os.getenv('DATABASE_URL'),
 
 
 def run_database_migrations(data_base):
-    create_collection_indexes =  True
-    create_initial_data = True
+    create_collection_indexes =  False
+    create_initial_data = False
 
     if create_collection_indexes:
         db_collection.up(data_base)

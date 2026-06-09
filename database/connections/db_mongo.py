@@ -1,6 +1,3 @@
-import os
-from dotenv import load_dotenv
-
 #biblioteca DB
 import pymongo as mongo
 from pymongo import errors 
@@ -9,27 +6,27 @@ from .db_Exception import DB_Exception
 from .db_base import DB_base
 
 class DB_mongo(DB_base):
-    def __init__(self, bd=None, client=None):
+    def __init__(self, url_config, db_config):
         super().__init__()
-        self.bd = bd
-        self.client = client
+        self.url_config = url_config
+        self.db_config = db_config
+        self.bd = None 
+        self.client = None
 
-    def _loadProperties(self, url):
+    def _loadProperties(self):
         try:
-            self.client = mongo.MongoClient(url)
+            self.client = mongo.MongoClient(self.url_config)
         except errors.ConnectionFailure as erro:
             raise DB_Exception(f'Erro: Conectação ao MongoDB\ninfo:{erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
 
-    def getConn(self, **kwargs):
+    def getConn(self):
         if self.bd is None:
             try:
-                mongo_DB = kwargs['DB']
-                mongo_url = kwargs['url']
                 
-                self._loadProperties(mongo_url)
-                self.bd = self.client[mongo_DB]
+                self._loadProperties()
+                self.bd = self.client[self.db_config]
                 return self.bd
             except errors.ServerSelectionTimeoutError as erro:
                 raise DB_Exception(f'Erro: Conectação ao Data base\ninfo:{erro}')
