@@ -4,7 +4,7 @@ from bson.objectid import ObjectId
 from ...entities.livro import Livro
 from ..livro_interface import ILivro_interface
 
-from ....database.connections.db_Exception import DB_Exception
+from database.connections.db_Exception import DB_Exception
 
 from pymongo import errors
 

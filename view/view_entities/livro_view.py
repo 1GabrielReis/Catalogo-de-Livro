@@ -1,5 +1,5 @@
 from ..response_base import Response_base
-from ...models.entities.livro import Livro
+from models.entities.livro import Livro
 
 class Livro_view(Response_base):
 

@@ -1,10 +1,10 @@
 from typing import List, TypeVar, Generic
 
-from ..models.entities.livro import Livro
-from ..schemas import Livro_schema
-from ..models.dao.livro_interface import ILivro_interface
-from ..clients.clients_interface import IBiblioteca_interface, IIa_interface
-from ..clients.api_biblioteca.livro_dto_response import Livro_dto_response
+from models.entities.livro import Livro
+from schemas.livro_schema import Livro_schema
+from models.dao.livro_interface import ILivro_interface
+from clients.clients_interface import IBiblioteca_interface, IIa_interface
+from clients.api_biblioteca.livro_dto_response import Livro_dto_response
 from .service_exception import Service_Exception
 
 class Livro_service:

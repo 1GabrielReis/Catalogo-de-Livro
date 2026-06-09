@@ -3,7 +3,7 @@ from typing import List
 
 from .api_biblioteca.livro_dto_response import Livro_dto_response
 from .api_ia.ia_dto_response import IA_dto_response
-from ..models.entities.livro import Livro
+from models.entities.livro import Livro
 
 class IIa_interface(ABC):
     
