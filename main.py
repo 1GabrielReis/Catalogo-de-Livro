@@ -80,7 +80,7 @@ def configure_application_routes(app: FastAPI, data_base):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # STARTUP
-    data_base = DB(bd=settings_env.data_base_url, client=settings_env.data_base)
+    data_base = DB(url_config=settings_env.data_base_url, db_config=settings_env.data_base)
     
     # Chama as execuções à parte organizadas
     run_database_migrations(data_base)
