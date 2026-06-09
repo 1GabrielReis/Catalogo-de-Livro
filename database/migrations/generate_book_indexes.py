@@ -8,7 +8,7 @@ def up(db: DB_mongo):
     try:
         colecao = db.getConn()['Livros']
 
-        if 'Livros' not in db.bd.list_collection_names():
+        if 'Livros' not in colecao.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute a migration anterior primeiro.")
         
         #"_id" mongo criação automaticamente 
@@ -30,7 +30,7 @@ def down(db: DB_mongo):
     try:
         colecao = db["Livros"]
         
-        if "Livros" not in db.bd.list_collection_names():
+        if "Livros" not in colecao.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute a migration anterior primeiro.")
         
         colecao.drop_index("titulo_1") # o mongo cria o _1 para refereir ao ordem.

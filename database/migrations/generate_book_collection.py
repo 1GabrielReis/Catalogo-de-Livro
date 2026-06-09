@@ -6,8 +6,8 @@ from ..connections.db_mongo import DB_mongo
 
 def up(db: DB_mongo):
     try:
-        db.getConn()
-        if "Livros" not in db.bd.list_collection_names():
+        data_base= db.getConn()
+        if "Livros" not in data_base.list_collection_names():
             schema = {
                 '$jsonSchema': {
                     "bsonType": "object",
@@ -42,7 +42,7 @@ def up(db: DB_mongo):
                     }
                 }
             }
-            db.create_collection("Livros", validator=schema)
+            data_base.create_collection("Livros", validator=schema)
         
     except CollectionInvalid as erro:
         raise DB_Exception(f'Coleção já existe: {str(erro)}')
@@ -51,8 +51,8 @@ def up(db: DB_mongo):
 
 def down(db: DB_mongo):
     try:
-        db.getConn()
-        if "Livros" in db.bd.list_collection_names():
-            db.drop_collection("Livros")
+        data_base = db.getConn()
+        if "Livros" in data_base.list_collection_names():
+            data_base.drop_collection("Livros")
     except Exception as erro:
         raise DB_Exception(f"✗ Erro ao remover coleção: {str(erro)}")
