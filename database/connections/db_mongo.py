@@ -27,11 +27,11 @@ class DB_mongo(DB_base):
                 
                 self._loadProperties()
                 self.bd = self.client[self.db_config]
-                return self.bd
             except errors.ServerSelectionTimeoutError as erro:
                 raise DB_Exception(f'Erro: Conectação ao Data base\ninfo:{erro}')
             except Exception as erro:
                 raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        return self.bd
 
     def closeCursor(self, curso):
         if curso is not None:
