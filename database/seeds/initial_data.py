@@ -48,8 +48,6 @@ def up(db: DB_mongo):
             
     except DuplicateKeyError as erro:
         raise DB_Exception(f"Erro: ISBN duplicado ao inserir dados. {str(erro)}")
-    finally:
-        db.closeCursor(colecao)
 
 
 def down(db: DB_mongo):
@@ -71,5 +69,3 @@ def down(db: DB_mongo):
             
     except Exception as erro:
         raise DB_Exception(f"Erro ao remover dados: {str(erro)}")
-    finally:
-        db.closeCursor(colecao)
