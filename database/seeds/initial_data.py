@@ -22,7 +22,6 @@ def up(db: DB_mongo):
                 "autor": "Fiódor Dostoiévski",
                 "editora": "Saraiva",
                 "sobre": "Uma obra clássica da literatura russa que explora temas de moralidade, culpa e redenção através da história de Raskólnikov.",
-                "descricao_ia": None,
                 "data_criacao": datetime_date()
             },
             {
@@ -30,7 +29,6 @@ def up(db: DB_mongo):
                 "autor": "Jane Austen",
                 "editora": "Intrínseca",
                 "sobre": "Romance de costumes que retrata a sociedade inglesa do século XIX através das aventuras amorosas de Elizabeth Bennet e Mr. Darcy.",
-                "descricao_ia": None,
                 "data_criacao": datetime_date()
             },
             {
@@ -38,7 +36,6 @@ def up(db: DB_mongo):
                 "autor": "Margaret Atwood",
                 "editora": "Companhia das Letras",
                 "sobre": "Uma narrativa contemporânea sobre mudanças sociais, resistência e a luta pelo poder em um mundo em transformação.",
-                "descricao_ia": None,
                 "data_criacao": datetime_date()
             }
         ]
