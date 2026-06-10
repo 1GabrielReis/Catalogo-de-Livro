@@ -4,13 +4,16 @@ from pymongo.errors import DuplicateKeyError
 from ..connections.db_Exception import DB_Exception
 from ..connections.db_mongo import DB_mongo
 
+def datetime_date():
+    data_time = datetime.today()
+    return data_time.replace(hour=0,minute=0,second=0,microsecond=0)
 
-def up(self, db: DB_mongo):
-    colecao = None 
+def up(db: DB_mongo):
+    data_base = None 
     try:
-        colecao = db.getConn()["Livros"]
+        data_base = db.getConn()
         
-        if "Livros" not in db.bd.list_collection_names():
+        if "Livros" not in data_base.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute as migrations primeiro.")
         
         livros = [
@@ -39,23 +42,23 @@ def up(self, db: DB_mongo):
                 "data_criacao": datetime_date()
             }
         ]
-        
+        colecao = data_base["Livros"]
         # Insere cada livro na coleção
         resultado = colecao.insert_many(livros)
         
         if not resultado.inserted_ids:
-            raise DB_Exception(f"Erro ao inserir dados iniciais: {str(erro)}")
+            raise DB_Exception(f"Erro ao inserir dados iniciais")
             
     except DuplicateKeyError as erro:
         raise DB_Exception(f"Erro: ISBN duplicado ao inserir dados. {str(erro)}")
 
 
-def down(self, db: DB_mongo):
-    colecao = None 
+def down(db: DB_mongo):
+    data_base = None 
     try:
-        colecao = db.getConn()["Livros"]
+        data_base = db.getConn()
         
-        if "Livros" not in db.bd.list_collection_names():
+        if "Livros" not in data_base.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe.")
         
         titulos_para_remover = [
@@ -64,12 +67,10 @@ def down(self, db: DB_mongo):
             "A Revolução Silenciosa"
         ]
         
+        colecao = data_base["Livros"]
         for titulo in titulos_para_remover:
             colecao.delete_one({"titulo": titulo})
             
     except Exception as erro:
         raise DB_Exception(f"Erro ao remover dados: {str(erro)}")
     
-def datetime_date(self):
-    data_time = datetime.today()
-    return data_time.replace(hour=0,minute=0,second=0,microsecond=0)
