@@ -4,13 +4,14 @@ from ..connections.db_mongo import DB_mongo
 from ..connections.db_Exception import DB_Exception
 
 def up(db: DB_mongo):
-    colecao = None
+    data_base = None
     try:
-        colecao = db.getConn()['Livros']
+        data_base = db.getConn()
 
-        if 'Livros' not in colecao.list_collection_names():
+        if 'Livros' not in data_base.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute a migration anterior primeiro.")
         
+        colecao = data_base["Livros"]
         #"_id" mongo criação automaticamente 
         colecao.create_index('titulo')
         colecao.create_index('autor')
@@ -22,17 +23,17 @@ def up(db: DB_mongo):
         raise DB_Exception(f"Erro de operação ao criar índices: {str(erro)}")
     except Exception as erro:
         raise DB_Exception(f"Erro inesperado ao criar índices: {str(erro)}")
-    finally:
-        db.closeCursor(colecao)
+
     
 def down(db: DB_mongo):
-    colecao = None
+    data_base = None
     try:
-        colecao = db["Livros"]
-        
-        if "Livros" not in colecao.list_collection_names():
+        data_base = db.getConn()
+
+        if 'Livros' not in data_base.list_collection_names():
             raise DB_Exception("Coleção 'Livros' não existe. Execute a migration anterior primeiro.")
         
+        colecao = data_base["Livros"]
         colecao.drop_index("titulo_1") # o mongo cria o _1 para refereir ao ordem.
         colecao.drop_index("autor_1") # sendo 1 crescente ou -1 decrescente)       
         colecao.drop_index("editora_1")
