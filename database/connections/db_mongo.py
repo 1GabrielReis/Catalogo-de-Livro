@@ -33,12 +33,12 @@ class DB_mongo(DB_base):
                 raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
         return self.bd
 
-    def closeCursor(self, curso):
-        if curso is not None:
+    def closeCursor(self, cursor): #só funciona no find, o find_one não precisa 
+        if cursor is not None:
             try:
-                curso.close()
+                cursor.closeCursor(cursor)
             except errors.OperationFailure as erro:
-                raise DB_Exception(f'Erro ao fechar o curso \ninfo:{erro}') 
+                raise DB_Exception(f'Erro ao fechar o cursor \ninfo:{erro}') 
             except Exception as erro:
                 raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')   
 
