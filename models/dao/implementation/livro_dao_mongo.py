@@ -70,20 +70,18 @@ class Livro_dao_mongo(ILivro_interface):
 
 
     def findById(self, id) -> Livro:
-        cursor = None
+        colecao = None
         try:
             livro_id = ObjectId(id)  if isinstance(id, str) else id
         
-            cursor = self.db.getConn()['Livros']
-            livro_dict = cursor.find_one({"_id":livro_id})
-            return self._mapping_entity(livro_dict)
+            colecao = self.db.getConn()['Livros']
+            cursor = colecao.find_one({"_id":livro_id})
+            return self._mapping_entity(cursor)
 
         except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
-        finally:
-            self.db.closeCursor(cursor)
     
     def findByTitle(self,title: str) -> List[Livro]:
         cursor = None
