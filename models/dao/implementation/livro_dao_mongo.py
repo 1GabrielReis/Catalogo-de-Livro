@@ -103,12 +103,13 @@ class Livro_dao_mongo(ILivro_interface):
 
 
     def findAll(self) -> List[Livro]:
-        cursor = None
+        colecao = None
         try:
-            cursor = self.db.getConn()['Livros']
-            livros_dict = list(cursor.find())
+            colecao = self.db.getConn()['Livros']
 
-            livros = [self._mapping_entity(livro) for livro in livros_dict]
+            cursor = colecao.find() 
+
+            livros = [self._mapping_entity(livro) for livro in list(cursor)]
             return livros
         except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
