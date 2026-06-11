@@ -48,7 +48,7 @@ class Livro_service:
 
     async def findById(self, id: str) -> Livro:
         try:
-            livro = await self.repository.findById(id)
+            livro = self.repository.findById(id)
             if not livro and id.strip().isdigit():
                 livro = await self.library_client.findById(int(id))
                 if livro:
