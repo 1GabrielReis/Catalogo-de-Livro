@@ -36,7 +36,8 @@ class DB_mongo(DB_base):
     def closeCursor(self, cursor): #só funciona no find, o find_one não precisa 
         if cursor is not None:
             try:
-                cursor.closeCursor(cursor)
+                if hasattr(cursor, 'close'):
+                    cursor.close()
             except errors.OperationFailure as erro:
                 raise DB_Exception(f'Erro ao fechar o cursor \ninfo:{erro}') 
             except Exception as erro:
