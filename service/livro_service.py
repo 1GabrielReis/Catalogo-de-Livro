@@ -71,9 +71,9 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
-    async def findAll(self) -> List[Livro]:
+    def findAll(self) -> List[Livro]:
         try:
-            return await self.repository.findAll()
+            return self.repository.findAll()
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
     
