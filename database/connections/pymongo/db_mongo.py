@@ -2,8 +2,8 @@
 import pymongo as mongo
 from pymongo import errors 
 
-from .db_Exception import DB_Exception
-from .db_base import DB_base
+from ..db_Exception import DB_Exception
+from ..db_base import DB_base
 
 class DB_mongo(DB_base):
     def __init__(self, url_config, db_config):

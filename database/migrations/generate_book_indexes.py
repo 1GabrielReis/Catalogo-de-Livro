@@ -1,6 +1,6 @@
 from pymongo.errors import OperationFailure
  
-from ..connections.db_mongo import DB_mongo
+from ..connections.pymongo.db_mongo import DB_mongo
 from ..connections.db_Exception import DB_Exception
 
 def up(db: DB_mongo):

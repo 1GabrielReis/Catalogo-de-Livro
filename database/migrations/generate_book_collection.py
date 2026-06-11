@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from pymongo.errors import CollectionInvalid
 
 from ..connections.db_Exception import DB_Exception
-from ..connections.db_mongo import DB_mongo
+from ..connections.pymongo.db_mongo import DB_mongo
 
 def up(db: DB_mongo):
     try:

@@ -2,7 +2,7 @@ from datetime import datetime
 from pymongo.errors import DuplicateKeyError
 
 from ..connections.db_Exception import DB_Exception
-from ..connections.db_mongo import DB_mongo
+from ..connections.pymongo.db_mongo import DB_mongo
 
 def datetime_date():
     data_time = datetime.today()

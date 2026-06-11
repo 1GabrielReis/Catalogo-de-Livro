@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 from api import route
 from config import settings, container as cont
-from database.connections.db_mongo import DB_mongo as DB
+from database.connections.pymongo.db_mongo import DB_mongo as DB
 from database.migrations import generate_book_collection as db_collection
 from database.migrations import generate_book_indexes as db_indexes
 from database.seeds import initial_data as db_initial
