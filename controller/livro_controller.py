@@ -46,9 +46,9 @@ class Livro_controller():
         except Exception as erro:
             raise Controller_Exception(f'erro findById controller: \ninfo: {erro}')
 
-    async def findAll(self) -> dict:
+    def findAll(self) -> dict:
         try:
-            livros = await self.service.findAll()
+            livros = self.service.findAll()
             return self.view.format_list(livros)
         except Exception as erro:
             raise Controller_Exception(f'erro findAll controller: \ninfo: {erro}')
