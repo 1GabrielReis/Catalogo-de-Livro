@@ -48,7 +48,7 @@ class Livro_service:
 
     async def findById(self, id: str) -> Livro:
         try:
-            livro = self.repository.findById(id)
+            livro = await self.repository.findById(id)
             if not livro and id.strip().isdigit():
                 livro = await self.library_client.findById(int(id))
                 if livro:
@@ -71,9 +71,9 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
-    def findAll(self) -> List[Livro]:
+    async def findAll(self) -> List[Livro]:
         try:
-            return self.repository.findAll()
+            return await self.repository.findAll()
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
     
