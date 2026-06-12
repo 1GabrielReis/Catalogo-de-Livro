@@ -8,47 +8,47 @@ class Livro_controller():
         self.service = service
         self.view = view
 
-    async def insert(self,livro_schema: Livro_schema) -> dict:
+    def insert(self,livro_schema: Livro_schema) -> dict:
         try:
-            id = await self.service.insert(livro_schema)
+            id = self.service.insert(livro_schema)
             return self.view.info(id)   
         except Exception as erro:
             raise Controller_Exception(f'erro insert controller: \ninfo: {erro}')
         
 
-    async def update(self,livro_schema: Livro_schema) -> dict:
+    def update(self,livro_schema: Livro_schema) -> dict:
         try:
-            check = await self.service.update(livro_schema)
+            check = self.service.update(livro_schema)
             return self.view.info(check)
         except Exception as erro:
             raise Controller_Exception(f'erro update controller: \ninfo: {erro}')
 
 
-    async def deleteById(self, id: str) -> dict:
+    def deleteById(self, id: str) -> dict:
         try:
-            check = await self.service.deleteById(id)
+            check = self.service.deleteById(id)
             return self.view.info(check)
         except Exception as erro:
             raise Controller_Exception(f'erro deleteById controller: \ninfo: {erro}')
 
 
-    async def findById(self, id: str) -> dict:
+    def findById(self, id: str) -> dict:
         try:
-            livro = await self.service.findById(id)
+            livro = self.service.findById(id)
             return self.view.format(livro)
         except Exception as erro:
             raise Controller_Exception(f'erro findById controller: \ninfo: {erro}')
 
-    async def findByTitle(self, title: str) -> dict:
+    def findByTitle(self, title: str) -> dict:
         try:
-            livros = await self.service.findByTitle(title)
+            livros = self.service.findByTitle(title)
             return self.view.format_list(livros)
         except Exception as erro:
             raise Controller_Exception(f'erro findById controller: \ninfo: {erro}')
 
-    async def findAll(self) -> dict:
+    def findAll(self) -> dict:
         try:
-            livros = await self.service.findAll()
+            livros = self.service.findAll()
             return self.view.format_list(livros)
         except Exception as erro:
             raise Controller_Exception(f'erro findAll controller: \ninfo: {erro}')

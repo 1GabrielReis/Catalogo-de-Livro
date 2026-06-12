@@ -13,7 +13,7 @@ class IA_api_client(IIa_interface):
         self.settings = settings
     
     
-    async def about_book(self,livro : Livro_dto_response | Livro) -> IA_dto_response:
+    def about_book(self,livro : Livro_dto_response | Livro) -> IA_dto_response:
         try:
             client = self.settings.ia_client()
 
@@ -29,7 +29,7 @@ class IA_api_client(IIa_interface):
                         Use uma linguagem clara e direta.
                         a resposta poder ter no maximo 1000 caracteres
                     '''
-            response = await client.aio.generate_content(model=self.settings.MODEL_ID,contents=prompt)
+            response = client.aio.generate_content(model=self.settings.MODEL_ID,contents=prompt)
             sobre = (response.text)
             return IA_dto_response(**livro,sobre=sobre)
 

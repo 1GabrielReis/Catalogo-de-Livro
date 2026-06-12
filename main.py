@@ -78,7 +78,7 @@ def configure_application_routes(app: FastAPI, data_base):
     )
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+def lifespan(app: FastAPI):
     # STARTUP
     data_base = DB(url_config=settings_env.data_base_url, db_config=settings_env.data_base)
     

@@ -12,11 +12,11 @@ class Biblioteca_api_client(IBiblioteca_interface):
     def __init__(self, settings: Biblioteca_settings):
         self.settings = settings
 
-    async def findById(self,id: int) -> Livro_dto_response:
+    def findById(self,id: int) -> Livro_dto_response:
         try:
-            async with httpx.AsyncClient() as client:
+            with httpx.AsyncClient() as client:
                 url = f'{self.settings.base_url}/{self.settings.username}'
-                response = await client.get(f'{url}/id/{id}')
+                response = client.get(f'{url}/id/{id}')
 
                 if response.status_code != 200:
                     raise Biblioteca_exception(f'Erro na requisição:{response.status_code}')
@@ -30,11 +30,11 @@ class Biblioteca_api_client(IBiblioteca_interface):
             raise Biblioteca_exception(f'Erro inesperado. Camda de API biblioteca \ninfo: {erro}')
 
 
-    async def findByTitle(self,titulo: str) -> List[Livro_dto_response]:
+    def findByTitle(self,titulo: str) -> List[Livro_dto_response]:
         try:
-            async with httpx.AsyncClient() as client:
+            with httpx.AsyncClient() as client:
                 url = f'{self.settings.base_url}/{self.settings.username}'
-                response = await client.get(f'{url}/titulo/{titulo}')
+                response = client.get(f'{url}/titulo/{titulo}')
 
                 if response.status_code != 200:
                     raise Biblioteca_exception(f'Erro na requisição:{response.status_code}')

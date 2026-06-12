@@ -8,16 +8,16 @@ from models.entities.livro import Livro
 class IIa_interface(ABC):
     
     @abstractmethod
-    async def about_book(self,livro : Livro_dto_response|Livro) -> IA_dto_response:
+    def about_book(self,livro : Livro_dto_response|Livro) -> IA_dto_response:
         pass
 
 class IBiblioteca_interface(ABC):
     
     @abstractmethod
-    async def findById(self,id: int) -> Livro_dto_response:
+    def findById(self,id: int) -> Livro_dto_response:
         pass
 
     @abstractmethod
-    async def findByTitle(self,title: str) -> List[Livro_dto_response]:
+    def findByTitle(self,title: str) -> List[Livro_dto_response]:
         pass
 
