@@ -84,12 +84,12 @@ class Livro_dao_mongo(ILivro_interface):
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
     
     def findByTitle(self,title: str) -> List[Livro]:
-        cursor = None
+        colecao = None
         try:
         
-            cursor = self.db.getConn()['Livros']
-            livros_dict = list(cursor.find({"titulo":title}))
-            livros = [self._mapping_entity(livro) for livro in livros_dict]
+            colecao = self.db.getConn()['Livros']
+            cursor = colecao.find({"titulo":title})
+            livros = [self._mapping_entity(livro) for livro in list(cursor)]
             return livros
 
         except errors.OperationFailure as erro:
