@@ -89,9 +89,9 @@ class Livro_dao_mongo(ILivro_interface):
             colecao = self.db.getConn()['Livros']
             query = {"titulo": {"$regex":title,"$options": "i"}}
             
-            cursor = colecao.find({"titulo":query})
+            cursor = colecao.find(query)
             livros = [self._mapping_entity(livro) for livro in list(cursor)]
-            
+
             return livros
         except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao encontrar livros\ninfo: {erro}')
