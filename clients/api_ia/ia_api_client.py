@@ -29,9 +29,12 @@ class IA_api_client(IIa_interface):
                         Use uma linguagem clara e direta.
                         a resposta poder ter no maximo 1000 caracteres
                     '''
-            response = client.aio.generate_content(model=self.settings.MODEL_ID,contents=prompt)
-            sobre = (response.text)
-            return IA_dto_response(**livro,sobre=sobre)
+            response = client.models.generate_content(model=self.settings.MODEL_ID,contents=prompt)
+            
+            sobre = response.text
+            livro_dict =  livro.__dict__ if not hasattr(livro, 'model_dump') else livro.model_dump()
+
+            return IA_dto_response(**livro_dict,sobre=sobre)
 
         except exceptions.ResourceExhausted as erro:
             raise IA_exception(f"Limite de requisições atingido. Calma lá!\ninfo:{erro}")
