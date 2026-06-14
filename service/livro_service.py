@@ -16,70 +16,70 @@ class Livro_service:
         self.ia_client = ia_client
     
 
-    async def insert(self,livro_schema: Livro_schema) -> dict:
+    def insert(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = Livro(**self._format_book(livro_schema))
-            livro = await self._check_library_about(livro)
+            livro = self._check_library_about(livro)
 
-            await self.repository.insert(livro)
+            self.repository.insert(livro)
             return  dict(id=livro.id)
             
         except Exception as erro:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
         
 
-    async def update(self,livro_schema: Livro_schema) -> dict:
+    def update(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = Livro(**self._format_book(livro_schema.model_dump()))
-            livro = await self._check_library_about(livro)
-            check =  await self.repository.update(livro)
+            livro = self._check_library_about(livro)
+            check =  self.repository.update(livro)
             return dict(check=check)
         except Exception as erro:
             raise Service_Exception(f'erro update service: \ninfo: {erro}')
 
 
-    async def deleteById(self, id: str) -> dict:
+    def deleteById(self, id: str) -> dict:
         try:
-            check =  await self.repository.deleteById(id)
+            check =  self.repository.deleteById(id)
             return dict(check=check)
         except Exception as erro:
             raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
 
-    async def findById(self, id: str) -> Livro:
+    def findById(self, id: str) -> Livro:
         try:
-            livro = await self.repository.findById(id)
+            livro = self.repository.findById(id)
             if not livro and id.strip().isdigit():
-                livro = await self.library_client.findById(int(id))
+                livro = self.library_client.findById(int(id))
                 if livro:
-                    livro_dto = await self.ia_client.about_book(livro)
+                    livro_dto = self.ia_client.about_book(livro)
                     livro = Livro(**self._format_book(**livro_dto))
-                    await self.repository.insert(livro)
+                    self.repository.insert(livro)
             return livro
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
-    async def findByTitle(self, title: str) -> List[Livro]:
+    def findByTitle(self, title: str) -> List[Livro]:
         try:
             title = " ".join([palavra.title() for palavra in title.split()])
-            livros = await self.repository.findByTitle(title)
+            livros = self.repository.findByTitle(title)
             if not livros:
-                livros = await self.library_client.findByTitle(title)
+                livros = self.library_client.findByTitle(title)
                 if livros:
                     livros = [Livro(**self._format_book(livro)) for livro in livros]
             return livros
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
-    async def findAll(self) -> List[Livro]:
+    def findAll(self) -> List[Livro]:
         try:
-            return await self.repository.findAll()
+            return self.repository.findAll()
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
     
-    async def _check_library_about(self,livro: Livro|Livro_dto_response) -> Livro:
+    def _check_library_about(self,livro: Livro|Livro_dto_response) -> Livro:
         if not livro.sobre or not livro.sobre.strip():
-            response= await self.ia_client.about_book(livro)
+            response= self.ia_client.about_book(livro)
             livro.sobre = response.sobre
         return livro
         
