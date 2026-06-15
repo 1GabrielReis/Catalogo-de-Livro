@@ -30,7 +30,7 @@ settings_env = settings.Settings(data_base_url= os.getenv('DATABASE_URL'),
                         ia_key= os.getenv('IA_KEY'),
                         model_id= os.getenv('MODEL_ID'),
                         biblioteca_url= os.getenv('BIBLIOTECA_URL'),
-                        blioteca_user= os.getenv('USERNAME'))
+                        blioteca_user= os.getenv('BIBLIOTECA_USER'))
 
 
 def run_database_migrations(data_base):
