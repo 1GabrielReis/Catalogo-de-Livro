@@ -1,4 +1,4 @@
-from google.api_core import exceptions
+from google.genai import errors
 
 from ..api_biblioteca.livro_dto_response import Livro_dto_response
 
@@ -36,11 +36,10 @@ class IA_api_client(IIa_interface):
 
             return IA_dto_response(**livro_dict,sobre=sobre)
 
-        except exceptions.ResourceExhausted as erro:
-            raise IA_exception(f"Limite de requisições atingido. Calma lá!\ninfo:{erro}")
-        except exceptions.InvalidArgument as erro:
-            raise IA_exception(f"Erro nos parâmetros \ninfo:{erro}")
-        except exceptions.GoogleAPIError as erro:
-            raise IA_exception(f"Erro interno na API de IA.\ninfo:{erro}")
+        except errors.APIError as erro:
+            if erro.status_code == 429:
+                raise IA_exception(f"Limite de requisições atingido. Calma lá!\ninfo:{erro}")
+            else:
+                raise IA_exception(f"Erro na API do Gemini ({erro.status_code}).\ninfo:{erro}")
         except Exception as erro:
             raise IA_exception(f'Erro inesperado. Camda de API IA \ninfo: {erro}')
