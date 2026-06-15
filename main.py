@@ -12,8 +12,10 @@ from database.migrations import generate_book_collection as db_collection
 from database.migrations import generate_book_indexes as db_indexes
 from database.seeds import initial_data as db_initial
 
-from clients.api_ia.ia_settings import IA_settings 
+from clients.api_ia.ia_settings import IA_settings
+from clients.api_ia.ia_api_client import IA_api_client 
 from clients.api_biblioteca.biblioteca_settings import Biblioteca_settings
+from clients.api_biblioteca.biblioteca_api_client import Biblioteca_api_client
 from models.dao.implementation.livro_dao_mongo import Livro_dao_mongo
 
 from service.livro_service import Livro_service
@@ -46,16 +48,13 @@ def configure_application_routes(app: FastAPI, data_base):
     # Clients / Infra
     livro_db = Livro_dao_mongo(db=data_base)
     ia_api = IA_settings(key=settings_env.ia_key, MODEL_ID=settings_env.model_id)
-    bilioteca_api = Biblioteca_settings(
-        base_url=settings_env.biblioteca_url,
-        username=settings_env.blioteca_user
-    )
+    bilioteca_api = Biblioteca_settings(base_url=settings_env.biblioteca_url,username=settings_env.blioteca_user)
 
     # Container IoC
     container = cont.Container(
         livro_bd=livro_db,
-        biblioteca_api=bilioteca_api,
-        ia_api=ia_api
+        biblioteca_api=Biblioteca_api_client(bilioteca_api),
+        ia_api=IA_api_client(ia_api)
     )
 
     # Core Domain Layer (Service)
