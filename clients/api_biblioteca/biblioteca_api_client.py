@@ -14,7 +14,7 @@ class Biblioteca_api_client(IBiblioteca_interface):
 
     def findById(self,id: int) -> Livro_dto_response:
         try:
-            with httpx.AsyncClient() as client:
+            with httpx.Client() as client:
                 url = f'{self.settings.base_url}/{self.settings.username}'
                 response = client.get(f'{url}/id/{id}')
 
@@ -32,7 +32,7 @@ class Biblioteca_api_client(IBiblioteca_interface):
 
     def findByTitle(self,titulo: str) -> List[Livro_dto_response]:
         try:
-            with httpx.AsyncClient() as client:
+            with httpx.Client() as client:
                 url = f'{self.settings.base_url}/{self.settings.username}'
                 response = client.get(f'{url}/titulo/{titulo}')
 
