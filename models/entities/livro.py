@@ -11,5 +11,4 @@ class Livro:
         self.data_criacao = data_criacao
 
     def __repr__(self):
-        return f"({self.id}, {self.titutlo}, {self.autor}, {self.editora}, {self.sobre})"
-
+        return f"({self.id}, {self.titulo}, {self.autor}, {self.editora}, {self.sobre})"
