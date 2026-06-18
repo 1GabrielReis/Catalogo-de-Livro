@@ -60,7 +60,7 @@ class Livro_dao_mongo(ILivro_interface):
             resultado = cursor.delete_one({"_id": livro_id})
             #if resultado.deleted_count  == 0:
                 # raise DB_Exception(f"Categoria com ID {livro_id} não encontrada")
-            return resultado.deleted_count  == 0 
+            return resultado.deleted_count  != 0 
         except errors.OperationFailure as erro:
             raise DB_Exception(f"Erro ao deletar categoria: {erro}")
         except Exception as erro:
