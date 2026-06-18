@@ -60,7 +60,7 @@ class Livro_dao_mongo(ILivro_interface):
             resultado = cursor.delete_one({"_id": livro_id})
             #if resultado.deleted_count  == 0:
                 # raise DB_Exception(f"Categoria com ID {livro_id} não encontrada")
-            return resultado.deleted_count  == 0 
+            return resultado.deleted_count  != 0 
         except errors.OperationFailure as erro:
             raise DB_Exception(f"Erro ao deletar categoria: {erro}")
         except Exception as erro:
@@ -86,13 +86,12 @@ class Livro_dao_mongo(ILivro_interface):
     def findByTitle(self,title: str) -> List[Livro]:
         colecao = None
         try:
+        
             colecao = self.db.getConn()['Livros']
-            query = {"titulo": {"$regex":title,"$options": "i"}}
-            
-            cursor = colecao.find(query)
+            cursor = colecao.find({"titulo":title})
             livros = [self._mapping_entity(livro) for livro in list(cursor)]
-
             return livros
+
         except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao encontrar livros\ninfo: {erro}')
         except Exception as erro:
