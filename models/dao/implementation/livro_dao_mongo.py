@@ -82,22 +82,25 @@ class Livro_dao_mongo(ILivro_interface):
             raise DB_Exception(f'Erro ao alterar livro \ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+        
     
     def findByTitle(self,title: str) -> List[Livro]:
-        colecao = None
-        try:
-        
-            colecao = self.db.getConn()['Livros']
-            cursor = colecao.find({"titulo":title})
-            livros = [self._mapping_entity(livro) for livro in list(cursor)]
-            return livros
+            colecao = None
+            cursor = None
+            try:
+                colecao = self.db.getConn()['Livros']
+                query = {"titulo": {"$regex":title,"$options": "i"}}
+                
+                cursor = colecao.find(query)
+                livros = [self._mapping_entity(livro) for livro in list(cursor)]
 
-        except errors.OperationFailure as erro:
-            raise DB_Exception(f'Erro ao encontrar livros\ninfo: {erro}')
-        except Exception as erro:
-            raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
-        finally:
-            self.db.closeCursor(cursor)
+                return livros
+            except errors.OperationFailure as erro:
+                raise DB_Exception(f'Erro ao encontrar livros\ninfo: {erro}')
+            except Exception as erro:
+                raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
+            finally:
+                self.db.closeCursor(cursor)
 
 
     def findAll(self) -> List[Livro]:
