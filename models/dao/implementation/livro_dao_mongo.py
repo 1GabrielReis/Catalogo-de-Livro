@@ -133,13 +133,12 @@ class Livro_dao_mongo(ILivro_interface):
             titulo, autor = livro.titulo, livro.autor
         
             colecao = self.db.getConn()['Livros']
-            cursor = colecao.find_one({"$and":[{"titulo":titulo},{'autor':autor}]})
+            cursor = colecao.find_one({"$and":[{"titulo": {"$regex":titulo,"$options": "i"}},
+                                               {'autor':  {"$regex":autor,"$options": "i"}}]})
             return str(cursor.get("_id")) if cursor else ""
         
         except errors.OperationFailure as erro:
             raise DB_Exception(f'Erro ao verificar \ninfo: {erro}')
         except Exception as erro:
             raise DB_Exception(f'Erro inesperado: \ninfo:{erro}')
-        finally:
-            self.db.closeCursor(cursor)
     
