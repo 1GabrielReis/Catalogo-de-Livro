@@ -29,12 +29,15 @@ class Livro_dao_mongo(ILivro_interface):
     def update(self,livro: Livro) -> bool:
         colecao = None
         try:
-            id_livro = (livro_dict := livro.__dict__).pop("id")
+            id_livro = livro.id
             id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
             
             if (duplicado := self._check_duplicity(livro)) and duplicado != str(id_livro):
                 return False
             
+            livro_dict = dict(livro.__dict__)
+            livro.pop("id",None)
+
             colecao = self.db.getConn()['Livros']
             resultado = colecao.update_one({'_id': id_livro},{"$set": livro_dict})
                 
