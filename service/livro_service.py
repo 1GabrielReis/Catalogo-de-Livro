@@ -73,7 +73,8 @@ class Livro_service:
 
     def findAll(self) -> List[Livro]:
         try:
-            return self.repository.findAll()
+            livros =  self.repository.findAll()
+            return [self._format_book(livro) for livro in livros]
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
     
