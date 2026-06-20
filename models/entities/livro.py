@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import date
 
 class Livro:
-    def __init__(self, id: Optional[str],  titulo: str, autor: str, editora: str, sobre: str, data_criacao: date):
+    def __init__(self, id: Optional[str],  titulo: str, autor: str, editora: str, sobre: Optional[str], data_criacao: date):
         self.id = id
         self.titulo = titulo
         self.autor = autor
