@@ -39,6 +39,8 @@ class Livro_service:
 
     def deleteById(self, id: str) -> dict:
         try:
+            if not id or not id.strip():
+                return dict(info='id não informado!') 
             check =  self.repository.deleteById(id)
             return dict(check=check)
         except Exception as erro:
