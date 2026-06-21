@@ -20,7 +20,7 @@ class Livro_service:
     def insert(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = self._format_book(livro_schema)
-            self._check_library_about(livro)
+            self._ensure_book_about(livro)
 
             self.repository.insert(livro)
             return  dict(id=livro.id)        
@@ -31,7 +31,7 @@ class Livro_service:
     def update(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = Livro(**self._format_book(livro_schema.model_dump()))
-            livro = self._check_library_about(livro)
+            livro = self._ensure_book_about(livro)
             check =  self.repository.update(livro)
             return dict(check=check)
         except Exception as erro:
@@ -78,7 +78,7 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
     
-    def _check_library_about(self,livro: Livro):
+    def _ensure_book_about(self,livro: Livro):
         if not livro.sobre or not livro.sobre.strip():
             response= self.ia_client.about_book(livro)
             livro.sobre = response.sobre
