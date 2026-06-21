@@ -48,6 +48,8 @@ class Livro_service:
 
     def findById(self, id: str) -> Livro | dict:
         try:
+            if not id or not id.strip():
+                return dict(info='id não informado!') 
             livro = self.repository.findById(id)
             if not livro and id.strip().isdigit():
                 livro = self.library_client.findById(int(id))
@@ -59,15 +61,16 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
-    def findByTitle(self, title: str) -> List[Livro]:
+    def findByTitle(self, title: str) -> List[Livro] | dict:
         try:
-            title = " ".join([palavra.title() for palavra in title.split()])
+            if not title or not title.strip():
+                return dict(info='titulo não informado!')         
+            title = self._format_str(title)
             livros = self.repository.findByTitle(title)
             if not livros:
                 livros = self.library_client.findByTitle(title)
-                if livros:
-                    livros = [Livro(**self._format_book(livro)) for livro in livros]
-            return livros
+            livros = [self._format_book(livro) for livro in livros] if livros else None
+            return livros if livros else dict(info='titulo não encontrado!')
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
@@ -93,7 +96,7 @@ class Livro_service:
             elif chave == "data_criacao":
                 livro_dict_formt[chave] = valor 
             else:
-                livro_dict_formt[chave] = " ".join(palavra.title() for palavra in valor.split()) if valor else None
+                livro_dict_formt[chave] = self._format_str(valor) if valor else None
 
         return Livro(**livro_dict_formt)
 
