@@ -1,4 +1,5 @@
 from typing import List, TypeVar, Generic
+from pydantic import BaseModel
 
 from models.entities.livro import Livro
 from schemas.livro_schema import Livro_schema
@@ -84,10 +85,25 @@ class Livro_service:
             livro.sobre = response.sobre
         return livro
         
-    def _format_book(self, livro:Livro_schema|Livro_dto_response) -> dict:
-        return dict(id= livro.id.strip() if livro.id else None,
-                     titulo= " ".join([palavra.title() for palavra in livro.titulo.split()]),
-                     autor= " ".join([nome.title() for nome in livro.autor.split()]),
-                     editora= " ".join([empresa.lower() for empresa in livro.editora.split()]),
-                     sobre= livro.sobre.strip() if livro.sobre else None,
-                     data_criacao= livro.data_criacao)
+    def _format_book(self, livro_objs: object) -> Livro:
+        livro_dict = self._to_dict(livro_objs)
+        livro_dict_formt = dict()
+
+        for chave, valor in livro_dict.items():
+            if chave in ("id", "sobre"):
+                livro_dict_formt[chave] = valor.strip() if valor else None
+            elif chave == "data_criacao":
+                livro_dict_formt[chave] = valor 
+            else:
+                livro_dict_formt[chave] = " ".join(palavra.title() for palavra in valor.split()) if valor else None
+
+        return Livro(**livro_dict_formt)
+                
+    
+    def _to_dict(self,livro_objs) -> dict:
+        if isinstance(livro_objs,BaseModel):
+            livro_dict= livro_objs.model_dump()
+        else:
+            livro_dict= livro_objs.__dict__
+        return livro_dict
+
