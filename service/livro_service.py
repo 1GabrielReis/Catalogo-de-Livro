@@ -19,12 +19,11 @@ class Livro_service:
 
     def insert(self,livro_schema: Livro_schema) -> dict:
         try:
-            livro = Livro(**self._format_book(livro_schema))
-            livro = self._check_library_about(livro)
+            livro = self._format_book(livro_schema)
+            self._check_library_about(livro)
 
             self.repository.insert(livro)
-            return  dict(id=livro.id)
-            
+            return  dict(id=livro.id)        
         except Exception as erro:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
         
