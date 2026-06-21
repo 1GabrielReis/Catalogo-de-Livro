@@ -30,7 +30,7 @@ class Livro_service:
 
     def update(self,livro_schema: Livro_schema) -> dict:
         try:
-            livro = Livro(**self._format_book(livro_schema.model_dump()))
+            livro = self._format_book(livro_schema)
             livro = self._ensure_book_about(livro)
             check =  self.repository.update(livro)
             return dict(check=check)
