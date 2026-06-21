@@ -22,7 +22,7 @@ class Biblioteca_api_client(IBiblioteca_interface):
                     raise Biblioteca_exception(f'Erro na requisição:{response.status_code}')
                 
                 data= response.json()
-                return Livro_dto_response(**data['dados'])
+                return self._formt_dados(data['dados'])
         
         except httpx.HTTPError as erro:
             raise Biblioteca_exception(f'Erro ao tentar fazer requisção com API biblioteca \ninfo: {erro} ')
@@ -41,9 +41,19 @@ class Biblioteca_api_client(IBiblioteca_interface):
                 
                 data= response.json()
                 lista_livros = data.get('dados', [])
-                return [Livro_dto_response(**livro) for livro in lista_livros]
+                return [self._formt_dados(livro) for livro in lista_livros]
         
         except httpx.HTTPError as erro:
             raise Biblioteca_exception(f'Erro ao tentar fazer requisção com API biblioteca \ninfo: {erro} ')
         except Exception as erro:
             raise Biblioteca_exception(f'Erro inesperado. Camda de API biblioteca \ninfo: {erro}')
+        
+
+    def _formt_dados(self,dados:dict|None) -> Livro_dto_response | None:
+        livro = None
+        if dados:
+            dados['id'] = str(dados['id'])
+            livro = Livro_dto_response(**dados)
+        return livro
+
+            
