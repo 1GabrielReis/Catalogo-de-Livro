@@ -79,11 +79,10 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
     
-    def _check_library_about(self,livro: Livro|Livro_dto_response) -> Livro:
+    def _check_library_about(self,livro: Livro):
         if not livro.sobre or not livro.sobre.strip():
             response= self.ia_client.about_book(livro)
             livro.sobre = response.sobre
-        return livro
         
     def _format_book(self, livro_objs: object) -> Livro:
         livro_dict = self._to_dict(livro_objs)
