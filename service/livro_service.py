@@ -1,10 +1,10 @@
-from typing import List, TypeVar, Generic
+from typing import List
+from pydantic import BaseModel
 
 from models.entities.livro import Livro
 from schemas.livro_schema import Livro_schema
 from models.dao.livro_interface import ILivro_interface
 from clients.clients_interface import IBiblioteca_interface, IIa_interface
-from clients.api_biblioteca.livro_dto_response import Livro_dto_response
 from .service_exception import Service_Exception
 
 class Livro_service:
@@ -18,20 +18,19 @@ class Livro_service:
 
     def insert(self,livro_schema: Livro_schema) -> dict:
         try:
-            livro = Livro(**self._format_book(livro_schema))
-            livro = self._check_library_about(livro)
+            livro = self._format_book(livro_schema)
+            self._ensure_book_about(livro)
 
             self.repository.insert(livro)
-            return  dict(id=livro.id)
-            
+            return  dict(id=livro.id)        
         except Exception as erro:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
         
 
     def update(self,livro_schema: Livro_schema) -> dict:
         try:
-            livro = Livro(**self._format_book(livro_schema.model_dump()))
-            livro = self._check_library_about(livro)
+            livro = self._format_book(livro_schema)
+            self._ensure_book_about(livro)
             check =  self.repository.update(livro)
             return dict(check=check)
         except Exception as erro:
@@ -40,34 +39,39 @@ class Livro_service:
 
     def deleteById(self, id: str) -> dict:
         try:
+            if not id or not id.strip():
+                return dict(info='id não informado!') 
             check =  self.repository.deleteById(id)
             return dict(check=check)
         except Exception as erro:
             raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
 
-    def findById(self, id: str) -> Livro:
+    def findById(self, id: str) -> Livro | dict:
         try:
+            if not id or not id.strip():
+                return dict(info='id não informado!') 
             livro = self.repository.findById(id)
             if not livro and id.strip().isdigit():
                 livro = self.library_client.findById(int(id))
                 if livro:
-                    livro_dto = self.ia_client.about_book(livro)
-                    livro = Livro(**self._format_book(**livro_dto))
+                    livro = self._format_book(livro)
+                    self._ensure_book_about(livro)
                     self.repository.insert(livro)
-            return livro
+            return self._format_book(livro) if livro else dict(info='Livro não encontrado')
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
-    def findByTitle(self, title: str) -> List[Livro]:
+    def findByTitle(self, title: str) -> List[Livro] | dict:
         try:
-            title = " ".join([palavra.title() for palavra in title.split()])
+            if not title or not title.strip():
+                return dict(info='titulo não informado!')         
+            title = self._format_str(title)
             livros = self.repository.findByTitle(title)
             if not livros:
                 livros = self.library_client.findByTitle(title)
-                if livros:
-                    livros = [Livro(**self._format_book(livro)) for livro in livros]
-            return livros
+            livros = [self._format_book(livro) for livro in livros] if livros else None
+            return livros if livros else dict(info='titulo não encontrado!')
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
@@ -78,16 +82,33 @@ class Livro_service:
         except Exception as erro:
             raise Service_Exception(f'erro findAll service: \ninfo: {erro}')
     
-    def _check_library_about(self,livro: Livro|Livro_dto_response) -> Livro:
+    def _ensure_book_about(self,livro: Livro):
         if not livro.sobre or not livro.sobre.strip():
             response= self.ia_client.about_book(livro)
             livro.sobre = response.sobre
-        return livro
         
-    def _format_book(self, livro:Livro_schema|Livro_dto_response) -> dict:
-        return dict(id= livro.id.strip() if livro.id else None,
-                     titulo= " ".join([palavra.title() for palavra in livro.titulo.split()]),
-                     autor= " ".join([nome.title() for nome in livro.autor.split()]),
-                     editora= " ".join([empresa.lower() for empresa in livro.editora.split()]),
-                     sobre= livro.sobre.strip() if livro.sobre else None,
-                     data_criacao= livro.data_criacao)
+    def _format_book(self, livro_objs: object) -> Livro:
+        livro_dict = self._to_dict(livro_objs)
+        livro_dict_formt = dict()
+
+        for chave, valor in livro_dict.items():
+            if chave in ("id", "sobre"):
+                livro_dict_formt[chave] = valor.strip() if valor else None
+            elif chave == "data_criacao":
+                livro_dict_formt[chave] = valor 
+            else:
+                livro_dict_formt[chave] = self._format_str(valor) if valor else None
+
+        return Livro(**livro_dict_formt)
+
+
+    def _to_dict(self,livro_objs) -> dict:
+        if isinstance(livro_objs,BaseModel):
+            livro_dict= livro_objs.model_dump()
+        else:
+            livro_dict= livro_objs.__dict__
+        return livro_dict
+    
+    def _format_str(self,valor:str):
+        return " ".join(palavra.title() for palavra in valor.split())
+
