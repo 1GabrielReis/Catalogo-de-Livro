@@ -31,7 +31,7 @@ class Livro_service:
     def update(self,livro_schema: Livro_schema) -> dict:
         try:
             livro = self._format_book(livro_schema)
-            livro = self._ensure_book_about(livro)
+            self._ensure_book_about(livro)
             check =  self.repository.update(livro)
             return dict(check=check)
         except Exception as erro:
@@ -46,16 +46,16 @@ class Livro_service:
             raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
 
-    def findById(self, id: str) -> Livro:
+    def findById(self, id: str) -> Livro | dict:
         try:
             livro = self.repository.findById(id)
             if not livro and id.strip().isdigit():
                 livro = self.library_client.findById(int(id))
                 if livro:
-                    livro_dto = self.ia_client.about_book(livro)
-                    livro = Livro(**self._format_book(**livro_dto))
+                    livro = self._format_book(livro)
+                    self._ensure_book_about(livro)
                     self.repository.insert(livro)
-            return livro
+            return self._format_book(livro) if livro else dict(info='Livro não encontrado')
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
 
