@@ -96,12 +96,15 @@ class Livro_service:
                 livro_dict_formt[chave] = " ".join(palavra.title() for palavra in valor.split()) if valor else None
 
         return Livro(**livro_dict_formt)
-                
-    
+
+
     def _to_dict(self,livro_objs) -> dict:
         if isinstance(livro_objs,BaseModel):
             livro_dict= livro_objs.model_dump()
         else:
             livro_dict= livro_objs.__dict__
         return livro_dict
+    
+    def _format_str(self,valor:str):
+        return " ".join(palavra.title() for palavra in valor.split())
 
