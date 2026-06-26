@@ -47,17 +47,22 @@ class Livro_service:
             raise Service_Exception(f'erro deleteById service: \ninfo: {erro}')
 
 
-    def findById(self, id: str) -> Livro | dict:
+    def findById(self, id: str|int) -> Livro | dict:
         try:
-            if not id or not id.strip():
+            livro = None
+            id_limpo = str(id).strip()
+
+            if not id_limpo:
                 return dict(info='id não informado!') 
-            livro = self.repository.findById(id)
-            if not livro and id.strip().isdigit():
-                livro = self.library_client.findById(int(id))
+            
+            if id_limpo.isdigit():
+                livro = self.library_client.findById(int(id_limpo))
                 if livro:
                     livro = self._format_book(livro)
                     self._ensure_book_about(livro)
                     self.repository.insert(livro)
+            else:
+                livro = self.repository.findById(id_limpo)
             return self._format_book(livro) if livro else dict(info='Livro não encontrado')
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
