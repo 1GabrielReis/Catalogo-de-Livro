@@ -103,7 +103,10 @@ class Livro_service:
                 livro_dict_formt[chave] = valor 
             else:
                 livro_dict_formt[chave] = self._format_str(valor) if valor else None
-
+        
+        livro_dict_formt.setdefault('id',None)
+        livro_dict_formt.setdefault('sobre',None)
+        livro_dict_formt.setdefault('data_criacao',None)
         return Livro(**livro_dict_formt)
 
 
