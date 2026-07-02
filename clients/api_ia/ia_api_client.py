@@ -29,12 +29,14 @@ class IA_api_client(IIa_interface):
                         Use uma linguagem clara e direta.
                         a resposta poder ter no maximo 1000 caracteres
                     '''
-            response = client.models.generate_content(model=self.settings.MODEL_ID,contents=prompt)
-            
-            sobre = response.text
+            response = client.models.generate_content(model=self.settings.MODEL_ID,contents=prompt)        
+
             livro_dict =  livro.__dict__ if not hasattr(livro, 'model_dump') else livro.model_dump()
 
-            return IA_dto_response(**livro_dict,sobre=sobre)
+            livro_dict.update({"sobre":response.text})
+            livro_dict.pop('data_criacao',None)
+
+            return IA_dto_response(**livro_dict)
 
         except errors.APIError as erro:
             if erro.status_code == 429:
