@@ -27,10 +27,15 @@ class Livro_service:
             raise Service_Exception(f'erro insert service: \ninfo: {erro}')
         
 
-    def update(self,livro_schema: Livro_schema) -> dict:
+    def update(self,livro_schema: Livro_schema, id: str) -> dict:
         try:
+            if not id or not id.strip():
+                return dict(info='id não informado!') 
+
             livro = self._format_book(livro_schema)
+            livro.id = id.strip()
             self._ensure_book_about(livro)
+            
             check =  self.repository.update(livro)
             return dict(check=check)
         except Exception as erro:
