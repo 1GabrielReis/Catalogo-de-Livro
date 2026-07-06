@@ -16,7 +16,7 @@ def get_livro_router(controller: Livro_controller):
             raise HTTPException(status_code=500, detail=f"Erro insert routes \ninfo {erro}")
 
     @routes.put("/{id}")
-    def update(id:int, schema:Livro_schema):
+    def update(id:str, schema:Livro_schema):
         try:
             schema.id=id
             return controller.update(schema)
