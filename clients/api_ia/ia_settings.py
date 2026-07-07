@@ -10,3 +10,6 @@ class IA_settings:
         if self.client is None:
             self.client = genai.Client(api_key=self.key)
         return self.client
+    
+    def config_tokens(self):
+        return genai.types.GenerateContentConfig(max_output_tokens=300, temperature=0.5)
