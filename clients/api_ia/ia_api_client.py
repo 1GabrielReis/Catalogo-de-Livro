@@ -29,7 +29,9 @@ class IA_api_client(IIa_interface):
                         Use uma linguagem clara e direta.
                         a resposta poder ter no maximo 1000 caracteres
                     '''
-            response = client.models.generate_content(model=self.settings.MODEL_ID,contents=prompt)        
+            response = client.models.generate_content(model=self.settings.MODEL_ID,
+                                                      contents=prompt,
+                                                      config= self.settings.config_tokens())        
 
             livro_dict =  livro.__dict__ if not hasattr(livro, 'model_dump') else livro.model_dump()
 
