@@ -18,8 +18,7 @@ def get_livro_router(controller: Livro_controller):
     @routes.put("/{id}")
     def update(id:str, schema:Livro_schema):
         try:
-            schema.id=id
-            return controller.update(schema)
+            return controller.update(livro_schema=schema, id=id)
         except Route_Exception as erro:
             raise HTTPException(status_code=500, detail=f"Erro update routes \ninfo {erro}")
 
