@@ -1,5 +1,6 @@
 from typing import List
 from pydantic import BaseModel
+from datetime import datetime
 
 from models.entities.livro import Livro
 from schemas.livro_schema import Livro_schema
@@ -20,7 +21,7 @@ class Livro_service:
         try:
             livro = self._format_book(livro_schema)
             self._ensure_book_about(livro)
-
+            livro.data_criacao = self._datetime_date()
             self.repository.insert(livro)
             return  dict(id=livro.id)        
         except Exception as erro:
@@ -124,4 +125,8 @@ class Livro_service:
     
     def _format_str(self,valor:str):
         return " ".join(palavra.title() for palavra in valor.split())
+    
+    def _datetime_date(self):
+        data_time = datetime.today()
+        return data_time.replace(hour=0,minute=0,second=0,microsecond=0)
 
