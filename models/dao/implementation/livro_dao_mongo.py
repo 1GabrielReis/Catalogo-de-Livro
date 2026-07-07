@@ -38,7 +38,7 @@ class Livro_dao_mongo(ILivro_interface):
             
             id_livro =livro_dict.pop("id",None)
             id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
-            del livro_dict["data_criacao"]
+            livro_dict.pop('data_criacao',None)
             
             colecao = self.db.getConn()['Livros']
             resultado = colecao.update_one({'_id': id_livro},{"$set": livro_dict})
