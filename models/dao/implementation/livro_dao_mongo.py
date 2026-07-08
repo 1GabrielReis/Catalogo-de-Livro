@@ -33,17 +33,22 @@ class Livro_dao_mongo(ILivro_interface):
         try:
             if (duplicado := self._check_duplicity(livro)) and duplicado != str(livro.id):
                 return False
-            
-            livro_dict = dict(livro.__dict__)
-            
-            id_livro =livro_dict.pop("id",None)
+
+            #livro_dict = livro.__dict__ gera erro interno de comunicação           
+            id_livro =livro.id
             id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
-            livro_dict.pop('data_criacao',None)
+            campos_update = {
+                "titulo": livro.titulo,
+                "autor": livro.autor,
+                "editora": livro.editora,
+                "sobre": livro.sobre,
+            }
+            campos_update = {k: v for k, v in campos_update.items() if v is not None}
             
             colecao = self.db.getConn()['Livros']
-            resultado = colecao.update_one({'_id': id_livro},{"$set": livro_dict})
+            resultado = colecao.update_one({'_id': id_livro},{"$set": campos_update})
                 
-            if resultado.modified_count == 0:
+            if resultado.matched_count == 0:
                 raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
             return True
          
