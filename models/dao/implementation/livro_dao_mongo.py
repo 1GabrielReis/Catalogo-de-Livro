@@ -94,6 +94,8 @@ class Livro_dao_mongo(ILivro_interface):
         
             colecao = self.db.getConn()['Livros']
             cursor = colecao.find_one({"_id":livro_id})
+            if not cursor:
+                return None
             return self._mapping_entity(cursor)
 
         except errors.OperationFailure as erro:
