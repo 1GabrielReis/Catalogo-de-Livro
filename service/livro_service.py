@@ -63,10 +63,11 @@ class Livro_service:
             
             if id_limpo.isdigit():
                 livro = self.library_client.findById(int(id_limpo))
-                if livro:
-                    self.insert(livro)
-            else:
-                livro = self.repository.findById(id_limpo)
+                if not livro:
+                    return dict(info='Livro não encontrado')
+                id_limpo = self.insert(livro)['id']
+
+            livro = self.repository.findById(id_limpo)
             return self._format_book(livro) if livro else dict(info='Livro não encontrado')
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
