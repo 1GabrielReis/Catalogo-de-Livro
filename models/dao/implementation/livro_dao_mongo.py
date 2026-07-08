@@ -22,8 +22,8 @@ class Livro_dao_mongo(ILivro_interface):
                 "titulo": livro.titulo,
                 "autor": livro.autor,
                 "editora": livro.editora,
-                "sobre": livro.sobre,
                 "data_criacao": livro.data_criacao,
+                "sobre": livro.sobre,
                 }
                 colecao = self.db.getConn()['Livros']
                 id= colecao.insert_one(campos_insert).inserted_id
