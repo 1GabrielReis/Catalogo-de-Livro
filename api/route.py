@@ -27,7 +27,12 @@ def get_livro_router(controller: Livro_controller):
         try:
             if not id or not id.strip():
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Dados inválidos")
-            return controller.deleteById(id)
+            resultado = controller.deleteById(id)
+            
+            if isinstance(resultado, dict) and resultado.get("dados", {}).get("check") is False:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Livro não encontrado")
+                
+            return resultado
         except Route_Exception as erro:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Erro delete routes \ninfo {erro}")
 
