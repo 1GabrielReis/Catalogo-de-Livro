@@ -17,9 +17,9 @@ class Livro_service:
         self.ia_client = ia_client
     
 
-    def insert(self,livro_schema: Livro_schema) -> dict:
+    def insert(self,livro_obj) -> dict:
         try:
-            livro = self._format_book(livro_schema)
+            livro = self._format_book(livro_obj)
             self._ensure_book_about(livro)
             livro.data_criacao = self._datetime_date()
             self.repository.insert(livro)
