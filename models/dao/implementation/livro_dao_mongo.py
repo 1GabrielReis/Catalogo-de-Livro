@@ -17,10 +17,15 @@ class Livro_dao_mongo(ILivro_interface):
         colecao = None
         try:
             if not (id := self._check_duplicity(livro)):
-                livro_dict = livro.__dict__
-                del livro_dict['id']
+                campos_insert = {
+                "titulo": livro.titulo,
+                "autor": livro.autor,
+                "editora": livro.editora,
+                "sobre": livro.sobre,
+                "data_criacao": livro.data_criacao,
+                }
                 colecao = self.db.getConn()['Livros']
-                id= colecao.insert_one(livro_dict).inserted_id
+                id= colecao.insert_one(campos_insert).inserted_id
             livro.id = str(id)
         except errors.DuplicateKeyError as erro:
             raise DB_Exception(f'Erro ao inserir novo livro \ninfo: {erro}')
