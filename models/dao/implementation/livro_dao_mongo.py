@@ -1,5 +1,6 @@
 from typing import List
 from bson.objectid import ObjectId
+from datetime import datetime
 
 from ...entities.livro import Livro
 from ..livro_interface import ILivro_interface
@@ -39,9 +40,10 @@ class Livro_dao_mongo(ILivro_interface):
             if (duplicado := self._check_duplicity(livro)) and duplicado != str(livro.id):
                 return False
 
-            #livro_dict = livro.__dict__ gera erro interno de comunicação           
-            id_livro =livro.id
-            id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
+            id_livro = ObjectId(livro.id) if isinstance(livro.id, str) else livro.id
+
+            colecao = self.db.getConn()['Livros']
+
             campos_update = {
                 "titulo": livro.titulo,
                 "autor": livro.autor,
@@ -50,8 +52,13 @@ class Livro_dao_mongo(ILivro_interface):
             }
             campos_update = {k: v for k, v in campos_update.items() if v is not None}
             
-            colecao = self.db.getConn()['Livros']
-            resultado = colecao.update_one({'_id': id_livro},{"$set": campos_update})
+            resultado = colecao.update_one(
+                {'_id': id_livro},
+                [{
+                    "$set": {"data_criacao": {"$ifNull": ["$data_criacao", datetime.today()]},
+                        **campos_update}
+                }]
+            )
                 
             if resultado.matched_count == 0:
                 raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
