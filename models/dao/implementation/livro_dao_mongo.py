@@ -142,11 +142,11 @@ class Livro_dao_mongo(ILivro_interface):
             """Mapeia uma linha do banco para a entidade Livro"""
             return Livro(
                 id= str(row['_id']),
-                titulo=row["titulo"],
-                autor=row["autor"],
-                editora=row["editora"],
-                sobre=row["sobre"],
-                data_criacao=row["data_criacao"]
+                titulo=row.get("titulo"),
+                autor=row.get("autor"),
+                editora=row.get("editora"),
+                sobre=row.get("sobre"),
+                data_criacao=row.get("data_criacao")
             )
     
     def _check_duplicity(self, livro: Livro) -> str:
