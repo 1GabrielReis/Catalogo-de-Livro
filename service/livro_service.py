@@ -64,9 +64,7 @@ class Livro_service:
             if id_limpo.isdigit():
                 livro = self.library_client.findById(int(id_limpo))
                 if livro:
-                    livro = self._format_book(livro)
-                    self._ensure_book_about(livro)
-                    self.repository.insert(livro)
+                    self.insert(livro)
             else:
                 livro = self.repository.findById(id_limpo)
             return self._format_book(livro) if livro else dict(info='Livro não encontrado')
