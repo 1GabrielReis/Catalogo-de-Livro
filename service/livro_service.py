@@ -93,8 +93,11 @@ class Livro_service:
     
     def _ensure_book_about(self,livro: Livro):
         if not livro.sobre or not livro.sobre.strip():
-            response= self.ia_client.about_book(livro)
-            livro.sobre = response.sobre
+            try:
+                response= self.ia_client.about_book(livro)
+                livro.sobre = response.sobre
+            except Exception as erro:
+                livro.sobre = "Sinopse indisponível no momento."
         
     def _format_book(self, livro_objs: object) -> Livro:
         livro_dict = self._to_dict(livro_objs)
