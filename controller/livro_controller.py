@@ -18,7 +18,7 @@ class Livro_controller():
 
     def update(self,id:str,livro_schema: Livro_schema) -> dict:
         try:
-            check = self.service.update(id,livro_schema)
+            check = self.service.update(id=id, livro_schema=livro_schema)
             return self.view.info(check)
         except Exception as erro:
             raise Controller_Exception(f'erro update controller: \ninfo: {erro}')
