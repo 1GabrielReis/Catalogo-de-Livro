@@ -11,19 +11,23 @@ from .biblioteca_exception import Biblioteca_exception
 class Biblioteca_api_client(IBiblioteca_interface):
     def __init__(self, settings: Biblioteca_settings):
         self.settings = settings
+        self.timeout = httpx.Timeout(connect=5.0, read=10.0, write=5.0, pool=5.0)
 
     def findById(self,id: int) -> Livro_dto_response:
         try:
-            with httpx.Client() as client:
+            with httpx.Client(timeout=self.timeout) as client:
                 url = f'{self.settings.base_url}/{self.settings.username}'
                 response = client.get(f'{url}/id/{id}')
+                response.raise_for_status()
 
                 if response.status_code != 200:
                     raise Biblioteca_exception(f'Erro na requisição:{response.status_code}')
                 
                 data= response.json()
                 return self._formt_dados(data['dados'])
-        
+            
+        except httpx.TimeoutException as erro:
+            raise Biblioteca_exception(f"Tempo limite ao consultar biblioteca externa: {erro}")
         except httpx.HTTPError as erro:
             raise Biblioteca_exception(f'Erro ao tentar fazer requisção com API biblioteca \ninfo: {erro} ')
         except Exception as erro:
