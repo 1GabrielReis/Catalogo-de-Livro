@@ -1,5 +1,6 @@
 from typing import List
 from pydantic import BaseModel
+from datetime import datetime
 
 from models.entities.livro import Livro
 from schemas.livro_schema import Livro_schema
@@ -16,11 +17,11 @@ class Livro_service:
         self.ia_client = ia_client
     
 
-    def insert(self,livro_schema: Livro_schema) -> dict:
+    def insert(self,livro_obj) -> dict:
         try:
-            livro = self._format_book(livro_schema)
+            livro = self._format_book(livro_obj)
             self._ensure_book_about(livro)
-
+            livro.data_criacao = self._datetime_date()
             self.repository.insert(livro)
             return  dict(id=livro.id)        
         except Exception as erro:
@@ -62,12 +63,11 @@ class Livro_service:
             
             if id_limpo.isdigit():
                 livro = self.library_client.findById(int(id_limpo))
-                if livro:
-                    livro = self._format_book(livro)
-                    self._ensure_book_about(livro)
-                    self.repository.insert(livro)
-            else:
-                livro = self.repository.findById(id_limpo)
+                if not livro:
+                    return dict(info='Livro não encontrado')
+                id_limpo = self.insert(livro)['id']
+
+            livro = self.repository.findById(id_limpo)
             return self._format_book(livro) if livro else dict(info='Livro não encontrado')
         except Exception as erro:
             raise Service_Exception(f'erro findById service: \ninfo: {erro}')
@@ -94,8 +94,11 @@ class Livro_service:
     
     def _ensure_book_about(self,livro: Livro):
         if not livro.sobre or not livro.sobre.strip():
-            response= self.ia_client.about_book(livro)
-            livro.sobre = response.sobre
+            try:
+                response= self.ia_client.about_book(livro)
+                livro.sobre = response.sobre
+            except Exception as erro:
+                livro.sobre = "Sinopse indisponível no momento."
         
     def _format_book(self, livro_objs: object) -> Livro:
         livro_dict = self._to_dict(livro_objs)
@@ -124,4 +127,8 @@ class Livro_service:
     
     def _format_str(self,valor:str):
         return " ".join(palavra.title() for palavra in valor.split())
+    
+    def _datetime_date(self):
+        data_time = datetime.today()
+        return data_time.replace(hour=0,minute=0,second=0,microsecond=0)
 

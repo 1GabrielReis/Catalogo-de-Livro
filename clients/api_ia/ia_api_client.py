@@ -1,4 +1,4 @@
-from google.genai import errors
+from google.genai.errors import APIError
 
 from ..api_biblioteca.livro_dto_response import Livro_dto_response
 
@@ -29,7 +29,9 @@ class IA_api_client(IIa_interface):
                         Use uma linguagem clara e direta.
                         a resposta poder ter no maximo 1000 caracteres
                     '''
-            response = client.models.generate_content(model=self.settings.MODEL_ID,contents=prompt)        
+            response = client.models.generate_content(model=self.settings.MODEL_ID,
+                                                      contents=prompt,
+                                                      config= self.settings.config_tokens())        
 
             livro_dict =  livro.__dict__ if not hasattr(livro, 'model_dump') else livro.model_dump()
 
@@ -38,9 +40,12 @@ class IA_api_client(IIa_interface):
 
             return IA_dto_response(**livro_dict)
 
-        except errors.APIError as erro:
-            if erro.status_code == 429:
+        except APIError as erro:
+            status_http = getattr(erro, 'code', None)
+            if status_http == 429:
                 raise IA_exception(f"Limite de requisições atingido. Calma lá!\ninfo:{erro}")
+            elif status_http == 503:
+                raise IA_exception(f"O serviço da IA está indisponível ou sobrecarregado no momento.\ninfo:{erro}")
             else:
                 raise IA_exception(f"Erro na API do Gemini ({erro.status_code}).\ninfo:{erro}")
         except Exception as erro:

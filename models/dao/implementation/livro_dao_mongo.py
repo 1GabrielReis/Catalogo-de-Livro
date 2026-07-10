@@ -1,5 +1,6 @@
 from typing import List
 from bson.objectid import ObjectId
+from datetime import datetime
 
 from ...entities.livro import Livro
 from ..livro_interface import ILivro_interface
@@ -17,8 +18,15 @@ class Livro_dao_mongo(ILivro_interface):
         colecao = None
         try:
             if not (id := self._check_duplicity(livro)):
+                campos_insert = {
+                "titulo": livro.titulo,
+                "autor": livro.autor,
+                "editora": livro.editora,
+                "data_criacao": livro.data_criacao,
+                "sobre": livro.sobre,
+                }
                 colecao = self.db.getConn()['Livros']
-                id= colecao.insert_one(**livro.__dict__).inserted_id
+                id= colecao.insert_one(campos_insert).inserted_id
             livro.id = str(id)
         except errors.DuplicateKeyError as erro:
             raise DB_Exception(f'Erro ao inserir novo livro \ninfo: {erro}')
@@ -29,18 +37,30 @@ class Livro_dao_mongo(ILivro_interface):
     def update(self,livro: Livro) -> bool:
         colecao = None
         try:
-            livro_dict = dict(livro.__dict__)
-            
-            id_livro =livro_dict.pop("id",None)
-            id_livro = ObjectId(id_livro) if isinstance(id_livro, str) else id_livro
-            
-            if (duplicado := self._check_duplicity(livro)) and duplicado != str(id_livro):
+            if (duplicado := self._check_duplicity(livro)) and duplicado != str(livro.id):
                 return False
-            
+
+            id_livro = ObjectId(livro.id) if isinstance(livro.id, str) else livro.id
+
             colecao = self.db.getConn()['Livros']
-            resultado = colecao.update_one({'_id': id_livro},{"$set": livro_dict})
+
+            campos_update = {
+                "titulo": livro.titulo,
+                "autor": livro.autor,
+                "editora": livro.editora,
+                "sobre": livro.sobre,
+            }
+            campos_update = {k: v for k, v in campos_update.items() if v is not None}
+            
+            resultado = colecao.update_one(
+                {'_id': id_livro},
+                [{
+                    "$set": {"data_criacao": {"$ifNull": ["$data_criacao", datetime.today()]},
+                        **campos_update}
+                }]
+            )
                 
-            if resultado.modified_count == 0:
+            if resultado.matched_count == 0:
                 raise DB_Exception(f"Categoria com ID {id_livro} não encontrada")
             return True
          
@@ -74,6 +94,8 @@ class Livro_dao_mongo(ILivro_interface):
         
             colecao = self.db.getConn()['Livros']
             cursor = colecao.find_one({"_id":livro_id})
+            if not cursor:
+                return None
             return self._mapping_entity(cursor)
 
         except errors.OperationFailure as erro:
@@ -122,11 +144,11 @@ class Livro_dao_mongo(ILivro_interface):
             """Mapeia uma linha do banco para a entidade Livro"""
             return Livro(
                 id= str(row['_id']),
-                titulo=row["titulo"],
-                autor=row["autor"],
-                editora=row["editora"],
-                sobre=row["sobre"],
-                data_criacao=row["data_criacao"]
+                titulo=row.get("titulo"),
+                autor=row.get("autor"),
+                editora=row.get("editora"),
+                sobre=row.get("sobre"),
+                data_criacao=row.get("data_criacao")
             )
     
     def _check_duplicity(self, livro: Livro) -> str:
