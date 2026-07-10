@@ -17,11 +17,9 @@ class Biblioteca_api_client(IBiblioteca_interface):
         try:
             with httpx.Client(timeout=self.timeout) as client:
                 url = f'{self.settings.base_url}/{self.settings.username}'
+                
                 response = client.get(f'{url}/id/{id}')
                 response.raise_for_status()
-
-                if response.status_code != 200:
-                    raise Biblioteca_exception(f'Erro na requisição:{response.status_code}')
                 
                 data= response.json()
                 return self._formt_dados(data['dados'])
