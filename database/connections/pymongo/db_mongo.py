@@ -15,7 +15,8 @@ class DB_mongo(DB_base):
 
     def _loadProperties(self):
         try:
-            self.client = mongo.MongoClient(self.url_config)
+            self.client = mongo.MongoClient(self.url_config,serverSelectionTimeoutMS=5000)
+            self.client.admin.command('ping')
         except errors.ConnectionFailure as erro:
             raise DB_Exception(f'Erro: Conectação ao MongoDB\ninfo:{erro}')
         except Exception as erro:
