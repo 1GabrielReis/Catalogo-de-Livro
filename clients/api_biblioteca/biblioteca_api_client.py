@@ -43,7 +43,8 @@ class Biblioteca_api_client(IBiblioteca_interface):
                 data= response.json()
                 lista_livros = data.get('dados', [])
                 return [self._formt_dados(livro) for livro in lista_livros]
-        
+        except httpx.TimeoutException as erro:
+            raise Biblioteca_exception(f"Tempo limite ao consultar biblioteca externa: {erro}")
         except httpx.HTTPError as erro:
             raise Biblioteca_exception(f'Erro ao tentar fazer requisção com API biblioteca \ninfo: {erro} ')
         except Exception as erro:
