@@ -34,12 +34,11 @@ class Biblioteca_api_client(IBiblioteca_interface):
 
     def findByTitle(self,titulo: str) -> List[Livro_dto_response]:
         try:
-            with httpx.Client() as client:
+            with httpx.Client(timeout=self.timeout) as client:
                 url = f'{self.settings.base_url}/{self.settings.username}'
-                response = client.get(f'{url}/titulo/{titulo}')
 
-                if response.status_code != 200:
-                    raise Biblioteca_exception(f'Erro na requisição:{response.status_code}')
+                response = client.get(f'{url}/titulo/{titulo}')
+                response.raise_for_status()
                 
                 data= response.json()
                 lista_livros = data.get('dados', [])
